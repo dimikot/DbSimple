@@ -3,7 +3,7 @@ require_once "../../lib/config.php";
 require_once "DbSimple/Generic.php";
 
 // Подключаемся к БД.
-$DATABASE = DbSimple_Generic::connect('mysql://test:test@localhost/non-existed-db');
+$DATABASE = DbSimple_Generic::connect('mysql://test:test@localhost1/non-existed-db');
 
 // Устанавливаем обработчик ошибок.
 $DATABASE->setErrorHandler('databaseErrorHandler');
