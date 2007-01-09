@@ -558,7 +558,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
 
         } 
 
-        if ($rows === null) {
+        if (null === $rows || true === $cache_it) {
             $this->_logQuery($query);
 
             // Run the query (counting time).
