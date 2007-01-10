@@ -1,7 +1,7 @@
 <?php
 /**
  * DbSimple_Generic: universal database connected by DSN.
- * (C) 2005 Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
+ * (C) Dk Lab, http://en.dklab.ru
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,6 +51,9 @@
  * - BLOB_OBJ
  * - CACHE
  *
+ * @author Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
+ * @author Konstantin Zhinko, http://forum.dklab.ru/users/KonstantinGinkoTit/
+ * 
  * @version 2.x $Id$
  */
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * DbSimple_Mysql: MySQL database.
- * (C) 2005 Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
+ * (C) Dk Lab, http://en.dklab.ru
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -11,6 +11,9 @@
  *
  * Placeholders end blobs are emulated.
  *
+ * @author Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
+ * @author Konstantin Zhinko, http://forum.dklab.ru/users/KonstantinGinkoTit/
+ * 
  * @version 2.x $Id$
  */
 require_once dirname(__FILE__) . '/Generic.php';
