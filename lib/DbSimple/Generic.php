@@ -115,6 +115,26 @@ class DbSimple_Generic
             $object->setIdentPrefix($parsed['ident_prefix']);
         }
         $object->setCachePrefix(md5(serialize($parsed['dsn'])));
+        if (@fopen('Cache/Lite.php', 'r', true)) {
+            $tmp_dirs = array(
+                ini_get('session.save_path'),
+                '/tmp'
+            );
+            foreach($tmp_dirs as $dir) {
+                $fp = @fopen($dir.'/t', 'w');
+                if (is_resource($fp)) {
+
+                    require_once 'Cache/Lite.php';
+                    $t = new Cache_Lite(array('cacheDir' => $dir.'/', 'lifeTime' => null, 'automaticSerialization' => true));
+                    $object->setCacher(&$t);
+
+                    break;
+                }
+
+            }
+            fclose($fp);
+            unlink($dir.'/t');
+        }
         return $object;
     }
     
@@ -501,10 +521,10 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         if ($total) {
             $this->_transformQuery($query, 'CALC_TOTAL');
         }
-
+        $is_cacher_callable = (is_callable($this->_cacher) || (method_exists($this->_cacher, 'get') && method_exists($this->_cacher, 'save')));
         $rows = null;
         $cache_it = false;
-        if (!empty($this->attributes['CACHE']) && is_callable($this->_cacher)) {
+        if (!empty($this->attributes['CACHE']) && $is_cacher_callable) {
 
             $hash = $this->_cachePrefix . md5(serialize($query));
             // Getting data from cache if possible
@@ -556,9 +576,9 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             if ($ttl && $uniq_key == $invalCache) {
                 $this->_logQuery($query);
                 $this->_logQueryStat($queryTime, $fetchTime, $firstFetchTime, $rows);
+
             }
             else $cache_it = true;
-
         } 
 
         if (null === $rows || true === $cache_it) {
@@ -604,7 +624,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             $result = $this->_transformResult($rows);
 
             // Storing data in cache
-            if ($cache_it && is_callable($this->_cacher)) {
+            if ($cache_it && $is_cacher_callable) {
                 $this->_cache(
                     $hash,
                     array(
@@ -1059,13 +1079,19 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     }
     
     /**
-     * mixed _cache($hash, $result=null, $ttl=null)
+     * mixed _cache($hash, $result=null)
      * Calls cache mechanism if possible.
      */
-    function _cache($hash, $result=null, $ttl=null)
+    function _cache($hash, $result=null)
     {
         if (is_callable($this->_cacher))
-            return call_user_func($this->_cacher, $hash, $result, $ttl);
+            return call_user_func($this->_cacher, $hash, $result);
+        else if (is_object($this->_cacher) && method_exists($this->_cacher, 'get') && method_exists($this->_cacher, 'save')) {
+            if (null === $result)
+                return $this->_cacher->get($hash);
+            else
+                $this->_cacher->save($result, $hash);
+        }
         else return false;
     }
     
