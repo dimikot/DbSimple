@@ -134,7 +134,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
                     (.*?)                                                        #2
                     (\s+ FROM \s+ .*?)                                           #3
                         ((?:\s+ ORDER \s+ BY \s+ .*?)?)                          #4
-                        ((?:\s+ LIMIT \s+ \S+ \s* (?:, OFFSET \s* \S+ \s*)? )?)  #5
+                        ((?:\s+ LIMIT \s+ \S+ \s* (?: OFFSET \s* \S+ \s*)? )?)  #5
                 $/six';
                 $m = null;
                 if (preg_match($re, $queryMain[0], $m)) {
