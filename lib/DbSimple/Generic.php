@@ -986,12 +986,18 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         foreach ($rows as $i=>$r) {
             $row =& $rows[$i];
             $id = $row[$idName];
+            if ($id === null) {
+                // Rows without an ID are totally invalid and makes the result tree to 
+                // be empty (because PARENT_ID = null means "a root of the tree"). So 
+                // skip them totally.
+                continue;
+            }
             $pid = $row[$pidName];
             if ($id == $pid) $pid = null;
             $children[$pid][$id] =& $row;
             if (!isset($children[$id])) $children[$id] = array();
             $row['childNodes'] =& $children[$id];
-            $ids[$row[$idName]] = true;
+            $ids[$id] = true;
         }
         // Root elements are elements with non-found PIDs.
         $forest = array();
@@ -1003,7 +1009,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             if (!isset($ids[$pid])) {
                 $forest[$row[$idName]] =& $row;
             }
-            unset($row[$idName]); unset($row[$pidName]);
+            unset($row[$idName]); 
+            unset($row[$pidName]);
         }
         return $forest;
     }
