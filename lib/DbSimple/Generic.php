@@ -118,22 +118,24 @@ class DbSimple_Generic
         if (@fopen('Cache/Lite.php', 'r', true)) {
             $tmp_dirs = array(
                 ini_get('session.save_path'),
+                getenv("TEMP"),
+                getenv("TMP"),
+                getenv("TMPDIR"),
                 '/tmp'
             );
-            foreach($tmp_dirs as $dir) {
-                $fp = @fopen($dir.'/t', 'w');
-                if (is_resource($fp)) {
-
+            foreach ($tmp_dirs as $dir) {
+                if (!$dir) continue;
+                $fp = @fopen($testFile = $dir . '/DbSimple_' . md5(getmypid() . microtime()), 'w');
+                if ($fp) {
+                    fclose($fp);
+                    unlink($testFile);                
                     require_once 'Cache/Lite.php';
-                    $t = new Cache_Lite(array('cacheDir' => $dir.'/', 'lifeTime' => null, 'automaticSerialization' => true));
+                    $t =& new Cache_Lite(array('cacheDir' => $dir.'/', 'lifeTime' => null, 'automaticSerialization' => true));
                     $object->setCacher(&$t);
-
                     break;
                 }
 
             }
-            fclose($fp);
-            unlink($dir.'/t');
         }
         return $object;
     }

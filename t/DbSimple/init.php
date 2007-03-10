@@ -4,6 +4,7 @@ chdir(dirname(realpath($stack[0]['file'])));
 
 header("Content-type: text/plain");
 include_once dirname(__FILE__) . "/../../lib/config.php";
+ini_set("include_path", ini_get("include_path").PATH_SEPARATOR.dirname(__FILE__).'/..'); // for Cache_Lite
 include_once "DbSimple/Generic.php"; 
 
 $DSN = array();
