@@ -129,7 +129,7 @@ class DbSimple_Generic
                 if ($fp) {
                     fclose($fp);
                     unlink($testFile);                
-                    require_once 'Cache/Lite.php';
+                    require_once 'Cache' . '/Lite.php'; // "." -> no phpEclipse notice
                     $t =& new Cache_Lite(array('cacheDir' => $dir.'/', 'lifeTime' => null, 'automaticSerialization' => true));
                     $object->setCacher(&$t);
                     break;
@@ -181,6 +181,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
      */
     function blob($blob_id = null)
     {
+        $this->_resetLastError();
         return $this->_performNewBlob($blob_id);
     }
     
@@ -190,6 +191,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
      */
     function transaction($mode=null)
     {
+        $this->_resetLastError();
         $this->_logQuery('-- START TRANSACTION '.$mode);
         return $this->_performTransaction($mode);
     }
@@ -200,6 +202,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
      */
     function commit()
     {
+        $this->_resetLastError();
         $this->_logQuery('-- COMMIT');
         return $this->_performCommit();
     }
@@ -210,6 +213,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
      */
     function rollback()
     {
+        $this->_resetLastError();
         $this->_logQuery('-- ROLLBACK');
         return $this->_performRollback();
     }
@@ -516,6 +520,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
      */
     function _query($query, &$total)
     {
+        $this->_resetLastError();
+        
         // Fetch query attributes.
         $this->attributes = $this->_transformQuery($query, 'GET_ATTRIBUTES');
 
@@ -683,7 +689,6 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                     $i++;
                 }
                 return true;
-                ;
         }
         // No such transform.
         $this->_setLastError(-1, "No such transform type: $how", $query);
@@ -1093,9 +1098,9 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
      */
     function _cache($hash, $result=null)
     {
-        if (is_callable($this->_cacher))
+        if (is_callable($this->_cacher)) {
             return call_user_func($this->_cacher, $hash, $result);
-        else if (is_object($this->_cacher) && method_exists($this->_cacher, 'get') && method_exists($this->_cacher, 'save')) {
+        } else if (is_object($this->_cacher) && method_exists($this->_cacher, 'get') && method_exists($this->_cacher, 'save')) {
             if (null === $result)
                 return $this->_cacher->get($hash);
             else
