@@ -1,5 +1,5 @@
 --TEST--
-Generic: selectRow(); usage
+Generic: Cache_Lite usage
 --FILE--
 <?php
 require_once dirname(__FILE__) . '/../init.php';
