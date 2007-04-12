@@ -131,7 +131,7 @@ class DbSimple_Generic
                     unlink($testFile);                
                     require_once 'Cache' . '/Lite.php'; // "." -> no phpEclipse notice
                     $t =& new Cache_Lite(array('cacheDir' => $dir.'/', 'lifeTime' => null, 'automaticSerialization' => true));
-                    $object->setCacher(&$t);
+                    $object->_cacher =& $t;
                     break;
                 }
 
