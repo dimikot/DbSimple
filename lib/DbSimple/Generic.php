@@ -272,12 +272,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $total = false;
         $rows = $this->_query($args, $total);
         if (!is_array($rows)) return $rows;
-        $col = array();
-        foreach ($rows as $k=>$row) { 
-            reset($row); 
-            $col[$k] = current($row); 
-        }
-        return $col;
+        $this->_shrinkLastArrayDimensionCallback($rows);
+        return $rows;
     }
 
     /**
@@ -1022,6 +1018,22 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         return $forest;
     }
 
+
+    /**
+     * Replaces the last array in a multi-dimensional array $V by its first value.
+     * Used for selectCol(), when we need to transform (N+1)d resulting array
+     * to Nd array (column).
+     */
+    function _shrinkLastArrayDimensionCallback(&$v)
+    {
+        reset($v);
+        if (!is_array($firstCell = current($v))) {
+            $v = $firstCell;
+        } else {
+            array_walk($v, array(&$this, '_shrinkLastArrayDimensionCallback'));
+        }
+    }
+    
 
     /**
      * void _logQuery($query, $noTrace=false)

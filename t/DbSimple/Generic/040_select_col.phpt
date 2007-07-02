@@ -1,5 +1,5 @@
 --TEST--
-Generic: selectCol(); usage
+Generic: selectCol() usage
 --FILE--
 <?php
 require_once dirname(__FILE__) . '/../init.php';

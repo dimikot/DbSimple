@@ -1,5 +1,5 @@
 --TEST--
-Generic: selectCell(); usage
+Generic: selectCell() usage
 --FILE--
 <?php
 require_once dirname(__FILE__) . '/../init.php';
