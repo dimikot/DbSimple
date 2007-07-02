@@ -1027,6 +1027,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
      */
     function _shrinkLastArrayDimensionCallback(&$v)
     {
+        if (!$v) return;
         reset($v);
         if (!is_array($firstCell = current($v))) {
             $v = $firstCell;
