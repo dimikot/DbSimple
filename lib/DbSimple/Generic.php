@@ -757,7 +757,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             (?> 
                 # Optional blocks
                 \{
-                    ( (?> (?>[^{}]*)  |  (?R) )* )             #1
+                    # Use "+" here, not "*"! Else nested blocks are not processed well.
+                    ( (?> (?>[^{}]+)  |  (?R) )* )             #1
                 \}
             )
               |
