@@ -821,9 +821,9 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                     // Identifier.
                     if (!is_array($value)) return $this->escape($value, true);
                     $parts = array();
-                    foreach ($value as $identifier) {
+                    foreach ($value as $table => $identifier) {
                         if (!is_string($identifier)) return 'DBSIMPLE_ERROR_ARRAY_VALUE_NOT_STRING';
-                        $parts[] = $this->escape($identifier, true);
+                        $parts[] = (!is_int($table)? $this->escape($table, true) . '.' : '') . $this->escape($identifier, true);
                     }
                     return join(', ', $parts);
                 case 'n':
