@@ -14,6 +14,7 @@ function main(&$DB)
 	$DB->query("INSERT INTO test(id, str) VALUES( 4, 'd')");
 	printr($DB->selectCol("SELECT str FROM test"));
 	printr($DB->selectCol("SELECT str, id FROM test"));
+	printr($DB->selectCol("SELECT str, id FROM test WHERE 1=0"));
 }
 
 ?>
@@ -37,4 +38,7 @@ array (
   1 => 'b',
   2 => 'c',
   3 => 'd',
+)
+Query: 'SELECT str, id FROM test WHERE 1=0'
+array (
 )
