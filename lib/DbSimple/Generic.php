@@ -718,6 +718,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $query = array_pop($this->_placeholderArgs); // array_pop is faster than array_shift
 
         // Do all the work.
+        $this->_placeholderNoValueFound = false;
         $query = $this->_expandPlaceholdersFlow($query);
 
         if ($useNative) {
@@ -1148,7 +1149,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     var $_logger = null;
     var $_cacher = null;
     var $_placeholderArgs, $_placeholderNativeArgs, $_placeholderCache=array();
-    var $_placeholderNoValueFound = false;
+    var $_placeholderNoValueFound;
     
     /**
      * When string representation of row (in characters) is greater than this,
