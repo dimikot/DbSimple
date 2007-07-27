@@ -106,14 +106,22 @@ class DbSimple_Ibase extends DbSimple_Generic_Database
     function _performCommit()
     {
         if (!is_resource($this->trans)) return false;
-        return @ibase_commit($this->trans);
+        $result = @ibase_commit($this->trans);
+        if (true === $result) {
+            $this->trans = null;
+        }
+        return $result;
     }
 
 
     function _performRollback()
     {
         if (!is_resource($this->trans)) return false;
-        return @ibase_rollback($this->trans);
+        $result = @ibase_rollback($this->trans);
+        if (true === $result) {
+            $this->trans = null;
+        }
+        return $result;
     }
 
     function _performTransformQuery(&$queryMain, $how)
@@ -158,7 +166,7 @@ class DbSimple_Ibase extends DbSimple_Generic_Database
         $hash = $queryMain[0];
         
         if (!isset($this->prepareCache[$hash])) {
-            $this->prepareCache[$hash] = @ibase_prepare($this->link, $queryMain[0]);
+            $this->prepareCache[$hash] = @ibase_prepare((is_resource($this->trans) ? $this->trans : $this->link), $queryMain[0]);
         } else {
             // Prepare cache hit!
         }
@@ -177,7 +185,7 @@ class DbSimple_Ibase extends DbSimple_Generic_Database
         if ($result === false) return $this->_setDbError($queryMain[0]);
         if (!is_resource($result)) {
             // Non-SELECT queries return number of affected rows, SELECT - resource.
-            return @ibase_affected_rows($this->link);
+            return @ibase_affected_rows((is_resource($this->trans) ? $this->trans : $this->link));
         }
         return $result;
     }
