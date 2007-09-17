@@ -701,7 +701,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $cacheCode = null;
         if ($this->_logger) {
             // Serialize is much faster than placeholder expansion. So use caching.
-            $cacheCode = crc32(serialize($queryAndArgs) . $useNative);
+            $cacheCode = md5(serialize($queryAndArgs) . '|' . $useNative . '|' . $this->_identPrefix);
             if (isset($this->_placeholderCache[$cacheCode])) {
                 $queryAndArgs = $this->_placeholderCache[$cacheCode];
                 return;
