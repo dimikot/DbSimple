@@ -32,6 +32,6 @@ With native placeholders: array (
   3 => 'a',
 )
 Without native placeholders: array (
-  0 => 'INSERT INTO test(id, pid, str) VALUES(\'10\', \'101\', \'a\')',
+  0 => 'INSERT INTO test(id, pid, str) VALUES(E\'10\', E\'101\', E\'a\')',
 )
 

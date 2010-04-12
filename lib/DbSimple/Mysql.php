@@ -46,6 +46,9 @@ class DbSimple_Mysql extends DbSimple_Generic_Database
         if (!$ok) return $this->_setDbError('mysql_connect()');
         $ok = @mysql_select_db(preg_replace('{^/}s', '', $p['path']), $this->link);
         if (!$ok) return $this->_setDbError('mysql_select_db()');
+        if (isset($p["charset"])) {
+            $this->query('SET NAMES ?', $p["charset"]);
+        }
     }
 
 

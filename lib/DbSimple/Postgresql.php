@@ -58,7 +58,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
     function _performEscape($s, $isIdent=false)
     {
         if (!$isIdent)
-            return "'" . str_replace("'", "''", $s) . "'";
+            return "E'" . pg_escape_string($this->link, $s) . "'";
         else
             return '"' . str_replace('"', '_', $s) . '"';
     }
@@ -218,7 +218,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
     
     function _setDbError($query)
     {
-        return $this->_setLastError(null, pg_last_error($this->link), $query);
+        return $this->_setLastError(null, $this->link? pg_last_error($this->link) : (is_array($query)? "Connection is not established" : $query), $query);
     }
 
     function _getVersion()

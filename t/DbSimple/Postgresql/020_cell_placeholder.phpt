@@ -29,8 +29,9 @@ if (!is_callable('pg_connect')) print('skip pgsql extension not loaded');
 --EXPECT--
 Query: 'DROP TABLE test'
 Query: 'CREATE TABLE test(id INTEGER, str VARCHAR(10))'
-Query: 'INSERT INTO test("id", "str") VALUES(\'1\', \'test\')'
+Query: 'INSERT INTO test("id", "str") VALUES(E\'1\', E\'test\')'
 Query: 'SELECT "id" FROM test'
 array (
   0 => '1',
 )
+

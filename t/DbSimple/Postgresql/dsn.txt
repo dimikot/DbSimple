@@ -1,1 +1,1 @@
-postgresql://test:test@localhost/test
+postgresql://test:test@127.0.0.1/test
