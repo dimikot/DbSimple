@@ -172,7 +172,7 @@ Listing 7: Query result caching by time
 
 $DB->setCacher('myCacher');
 $row = $DB->select('
-    — CACHE: 10h 20m 30s
+    -- CACHE: 10h 20m 30s
     SELECT * FROM table WHERE id=123
 ');
 
@@ -188,7 +188,7 @@ Listing 8: Query result caching with dependence on table modification
 
 // Here forum.modified and topic.modified are TIMESTAMPs.
 $row = $DB->select('
-    — CACHE: 10h 20m 30s, forum.modified, topic.modified
+    -- CACHE: 10h 20m 30s, forum.modified, topic.modified
     SELECT * 
     FROM forum JOIN topic ON topic.forum_id=forum.id 
     WHERE id=123
