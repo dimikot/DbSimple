@@ -31,7 +31,7 @@
  * Parsing code is partially grabbed from PEAR DB class,
  * initial author: Tomas V.V.Cox <cox@idecnet.com>.
  * 
- * Ñontains 3 classes:
+ * Contains 3 classes:
  * - DbSimple_Generic: database factory class
  * - DbSimple_Generic_Database: common database methods
  * - DbSimple_Generic_Blob: common BLOB support
@@ -966,7 +966,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                     $tmp = array();
                     $current[] =& $tmp;
                     $current =& $tmp;
-                    unset($tmp); // we use ætmp, because don't know the value of auto-index
+                    unset($tmp); // we use $tmp, because don't know the value of auto-index
                 }
             }
             $current = $row; // save the row in last dimension
