@@ -120,8 +120,7 @@ class DbSimple_Connect
 	}
 
 	/**
-	 * Функция обработки ошибок - выводит сообщение об ошибке на тестовом
-	 * на продакшене показывает 404 и пишит в sql.log
+	 * Функция обработки ошибок - стандартный обработчик
 	 * Все вызовы без @ прекращают выполнение скрипта
 	 */
 	public function errorHandler($msg, $info)
@@ -136,8 +135,27 @@ class DbSimple_Connect
 	}
 
 	/**
-	 * array parseDSN(string $dsn)
+	 * Set new error handler called on database errors.
+	 * Handler gets 2 arguments:
+	 * - error message
+	 * - full error context information (last query etc.)
+	 *
+	 * @param callback setErrorHandler(callback $handler)
+	 */
+	public function setErrorHandler($handler)
+	{
+		$prev = $this->errorHandler;
+		$this->errorHandler = $handler;
+		return $this->DbSimple->setErrorHandler($handler);
+	}
+
+	/** @var callback обработчик ошибок */
+	private $errorHandler = null;
+
+	/**
 	 * Разбирает строку DSN в массив параметров подключения к базе
+	 *
+	 * @param array parseDSN(string $dsn)
 	 */
 	protected function parseDSN($dsn)
 	{
