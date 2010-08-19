@@ -16,13 +16,13 @@
  * 
  * @version 2.x $Id$
  */
-require_once dirname(__FILE__) . '/Generic.php';
+require_once dirname(__FILE__) . '/Database.php';
 
 
 /**
  * Database class for MySQL.
  */
-class DbSimple_Mysql extends DbSimple_Generic_Database
+class DbSimple_Mysql extends DbSimple_Database
 {
     var $link;
 
@@ -32,7 +32,7 @@ class DbSimple_Mysql extends DbSimple_Generic_Database
      */
     function DbSimple_Mysql($dsn)
     {
-        $p = DbSimple_Generic::parseDSN($dsn);
+        $p = DbSimple_Database::parseDSN($dsn);
         if (!is_callable('mysql_connect')) {
             return $this->_setLastError("-1", "MySQL extension is not loaded", "mysql_connect");
         }
@@ -193,7 +193,7 @@ class DbSimple_Mysql extends DbSimple_Generic_Database
 }
 
 
-class DbSimple_Mysql_Blob extends DbSimple_Generic_Blob
+class DbSimple_Mysql_Blob extends DbSimple_Blob
 {
     // MySQL does not support separate BLOB fetching. 
     var $blobdata = null;

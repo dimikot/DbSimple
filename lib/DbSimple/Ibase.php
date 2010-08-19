@@ -16,7 +16,7 @@
  * 
  * @version 2.x $Id$
  */
-require_once dirname(__FILE__) . '/Generic.php';
+require_once dirname(__FILE__) . '/Database.php';
 
 /**
  * Best transaction parameters for script queries.
@@ -30,7 +30,7 @@ define('IBASE_BEST_FETCH', IBASE_UNIXTIME);
  * Database class for Interbase/Firebird.
  */
 
-class DbSimple_Ibase extends DbSimple_Generic_Database
+class DbSimple_Ibase extends DbSimple_Database
 {
     var $DbSimple_Ibase_BEST_TRANSACTION = IBASE_BEST_TRANSACTION;
     var $DbSimple_Ibase_USE_NATIVE_PHOLDERS = true;
@@ -45,7 +45,7 @@ class DbSimple_Ibase extends DbSimple_Generic_Database
      */
     function DbSimple_Ibase($dsn)
     {
-        $p = DbSimple_Generic::parseDSN($dsn);
+        $p = DbSimple_Database::parseDSN($dsn);
         if (!is_callable('ibase_connect')) {
             return $this->_setLastError("-1", "Interbase/Firebird extension is not loaded", "ibase_connect");
         }
@@ -211,7 +211,7 @@ class DbSimple_Ibase extends DbSimple_Generic_Database
     
 }
 
-class DbSimple_Ibase_Blob extends DbSimple_Generic_Blob
+class DbSimple_Ibase_Blob extends DbSimple_Blob
 {
     var $blob; // resourse link
     var $id;

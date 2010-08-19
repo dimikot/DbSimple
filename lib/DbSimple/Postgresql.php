@@ -16,13 +16,13 @@
  * 
  * @version 2.x $Id$
  */
-require_once dirname(__FILE__) . '/Generic.php';
+require_once dirname(__FILE__) . '/Database.php';
 
 
 /**
  * Database class for PostgreSQL.
  */
-class DbSimple_Postgresql extends DbSimple_Generic_Database
+class DbSimple_Postgresql extends DbSimple_Database
 {
 
     var $DbSimple_Postgresql_USE_NATIVE_PHOLDERS = null;
@@ -35,7 +35,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
      */
     function DbSimple_Postgresql($dsn)
     {
-        $p = DbSimple_Generic::parseDSN($dsn);
+        $p = DbSimple_Database::parseDSN($dsn);
         if (!is_callable('pg_connect')) {
             return $this->_setLastError("-1", "PostgreSQL extension is not loaded", "pg_connect");
         }
@@ -227,7 +227,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
 }
 
 
-class DbSimple_Postgresql_Blob extends DbSimple_Generic_Blob
+class DbSimple_Postgresql_Blob extends DbSimple_Blob
 {
     var $blob; // resourse link
     var $id;

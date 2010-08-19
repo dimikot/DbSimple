@@ -3,13 +3,13 @@
 /**
  * Используйте константу DBSIMPLE_SKIP в качестве подстановочного значения чтобы пропустить опцональный SQL блок.
  */
-//define('DBSIMPLE_SKIP', log(0));
+define('DBSIMPLE_SKIP', log(0));
 /**
  * Имена специализированных колонок в резальтате,
  * которые используются как ключи в результирующем массиве
  */
-//define('DBSIMPLE_ARRAY_KEY', 'ARRAY_KEY');   // hash-based resultset support
-//define('DBSIMPLE_PARENT_KEY', 'PARENT_KEY'); // forrest-based resultset support
+define('DBSIMPLE_ARRAY_KEY', 'ARRAY_KEY');   // hash-based resultset support
+define('DBSIMPLE_PARENT_KEY', 'PARENT_KEY'); // forrest-based resultset support
 
 /**
  * Класс обертка для DbSimple
