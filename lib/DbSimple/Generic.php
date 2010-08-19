@@ -1338,6 +1338,7 @@ class DbSimple_Generic_LastError
                 $t['over_function'] = $trace[$i+1]['function'];
                 $t = $t + $trace[$i+1];
                 $trace[$i+1] = null; // skip call_user_func on next iteration
+                $next = isset($trace[$i+2])? $trace[$i+2] : null; // Correct Next frame.
             }
             
             // Skip myself frame.
