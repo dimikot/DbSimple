@@ -449,19 +449,21 @@ class DbSimple_Database extends DbSimple_LastError
 
             // Calculating cache time to live
             $re = '/
-                (
-                    ([0-9]+)           #2 - hours
+                (?>
+                    ([0-9]+)           #1 - hours
                 h)? [ \t]* 
-                (
-                    ([0-9]+)           #4 - minutes
+                (?>
+                    ([0-9]+)           #2 - minutes
                 m)? [ \t]* 
-                (
-                    ([0-9]+)           #6 - seconds
+                (?>
+                    ([0-9]+)           #3 - seconds
                 s?)? (,)?
             /sx';
             $m = null;
             preg_match($re, $cache_params, $m);
-            $ttl = @$m[6] + @$m[4] * 60 + @$m[2] * 3600;
+            $ttl = (isset($m[3])?$m[3]:0)
+                 + (isset($m[2])?$m[2]:0) * 60
+                 + (isset($m[1])?$m[1]:0) * 3600;
             // Cutting out time param - now there are just fields for uniqKey or nothing 
             $cache_params = trim(preg_replace($re, '', $cache_params, 1));
 
