@@ -31,7 +31,7 @@
  * Use this constant as placeholder value to skip optional SQL block [...].
  */
 if (!defined('DBSIMPLE_SKIP'))
-	define('DBSIMPLE_SKIP', log(0));
+    define('DBSIMPLE_SKIP', log(0));
 
 /**
  * Names of special columns in result-set which is used
@@ -39,9 +39,9 @@ if (!defined('DBSIMPLE_SKIP'))
  * resulting hash.
  */
 if (!defined('DBSIMPLE_ARRAY_KEY'))
-	define('DBSIMPLE_ARRAY_KEY', 'ARRAY_KEY');   // hash-based resultset support
+    define('DBSIMPLE_ARRAY_KEY', 'ARRAY_KEY');   // hash-based resultset support
 if (!defined('DBSIMPLE_PARENT_KEY'))
-	define('DBSIMPLE_PARENT_KEY', 'PARENT_KEY'); // forrest-based resultset support
+    define('DBSIMPLE_PARENT_KEY', 'PARENT_KEY'); // forrest-based resultset support
 
 /**
  *
@@ -720,13 +720,24 @@ class DbSimple_Database extends DbSimple_LastError
                         }
                     }
                     return join(', ', $parts);
-                case "#":
+                case '#':
                     // Identifier.
-                    if (!is_array($value)) return $this->escape($value, true);
+                    if (!is_array($value))
+                        return $this->escape($this->_addPrefix2Table($value), true);
                     $parts = array();
-                    foreach ($value as $table => $identifier) {
-                        if (!is_string($identifier)) return 'DBSIMPLE_ERROR_ARRAY_VALUE_NOT_STRING';
-                        $parts[] = (!is_int($table)? $this->escape($table, true) . '.' : '') . $this->escape($identifier, true);
+                    foreach ($value as $table => $identifiers)
+                    {
+                        if (!is_array($identifiers))
+                            $identifiers = array($identifiers);
+                        $prefix = '';
+                        if (!is_int($table))
+                            $prefix = $this->escape($this->_addPrefix2Table($table), true) . '.';
+                        foreach ($identifiers as $identifier)
+                            if (!is_string($identifier))
+                                return 'DBSIMPLE_ERROR_ARRAY_VALUE_NOT_STRING';
+                            else
+                                $parts[] = $prefix . ($identifier=='*' ? '*' :
+                                    $this->escape($this->_addPrefix2Table($identifier), true));
                     }
                     return join(', ', $parts);
                 case 'n':
@@ -769,6 +780,20 @@ class DbSimple_Database extends DbSimple_LastError
     }
     
     
+    /**
+     * Заменяет ?_ на текущий префикс
+     *
+     * @param string $table имя таблицы
+     * @return string имя таблицы
+     */
+    private function _addPrefix2Table($table)
+    {
+        if (substr($table, 0, 2) == '?_')
+            $table = $this->_identPrefix . substr($table, 2);
+        return $table;
+    }
+
+
     /**
      * void _setLastError($code, $msg, $query)
      * Set last database error context.
