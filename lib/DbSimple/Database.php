@@ -663,7 +663,7 @@ class DbSimple_Database extends DbSimple_LastError
                 # Optional blocks
                 \{
                     # Use "+" here, not "*"! Else nested blocks are not processed well.
-                    ( (?> (?>[^{}]+)  |  (?R) )* )             #1
+                    ( (?> (?>(\??)[^{}]+)  |  (?R) )* )             #1
                 \}
             )
               |
@@ -688,8 +688,8 @@ class DbSimple_Database extends DbSimple_LastError
     function _expandPlaceholdersCallback($m)
     {
         // Placeholder.
-        if (!empty($m[2])) {
-            $type = $m[3];
+        if (!empty($m[3])) {
+            $type = $m[4];
             
             // Idenifier prefix.
             if ($type == '_') {
@@ -769,11 +769,29 @@ class DbSimple_Database extends DbSimple_LastError
         }
         
         // Optional block.
-        if (isset($m[1]) && strlen($block=$m[1])) {
-            $prev = @$this->_placeholderNoValueFound;
-            $block = $this->_expandPlaceholdersFlow($block);
-            $block = $this->_placeholderNoValueFound? '' : ' ' . $block . ' ';
-            $this->_placeholderNoValueFound = $prev; // recurrent-safe            
+        if (isset($m[1]) && strlen($block=$m[1]))
+        {
+            $prev  = $this->_placeholderNoValueFound;
+            if ($this->_placeholderNativeArgs !== null)
+                $prevPh = $this->_placeholderNativeArgs;
+
+            // Проверка на {?  } - условный блок
+            $skip = false;
+            if ($m[2]=='?')
+            {
+                $skip = array_pop($this->_placeholderArgs) === DBSIMPLE_SKIP;
+                $block[0] = ' ';
+            }
+
+            $block = $this->_expandOptionalBlock($block);
+
+            if ($skip)
+                $block = '';
+
+            if ($this->_placeholderNativeArgs !== null)
+                if ($this->_placeholderNoValueFound)
+                    $this->_placeholderNativeArgs = $prevPh;
+            $this->_placeholderNoValueFound = $prev; // recurrent-safe
             return $block;
         }
         
@@ -793,6 +811,50 @@ class DbSimple_Database extends DbSimple_LastError
         if (substr($table, 0, 2) == '?_')
             $table = $this->_identPrefix . substr($table, 2);
         return $table;
+    }
+
+
+    /**
+     * Разбирает опциональный блок - условие |
+     *
+     * @param string $block блок, который нужно разобрать
+     * @return string что получается в результате разбора блока
+     */
+    private function _expandOptionalBlock($block)
+    {
+        $alts = array();
+        $alt = '';
+        $sub=0;
+        $exp = explode('|',$block);
+        // Оптимизация, так как в большинстве случаев | не используется
+        if (count($exp)==1)
+            $alts=$exp;
+        else
+            foreach ($exp as $v)
+            {
+                // Реализуем автоматный магазин для нахождения нужной скобки
+                // На суммарную парность скобок проверять нет необходимости - об этом заботится регулярка
+                $sub+=substr_count($v,'{');
+                $sub-=substr_count($v,'}');
+                if ($sub>0)
+                    $alt.=$v.'|';
+                else
+                {
+                    $alts[]=$alt.$v;
+                    $alt='';
+                }
+            }
+        $r='';
+        foreach ($alts as $block)
+        {
+            $this->_placeholderNoValueFound = false;
+            $block = $this->_expandPlaceholdersFlow($block);
+            // Необходимо пройти все блоки, так как если пропустить оставшиесь,
+            // то это нарушит порядок подставляемых значений
+            if ($this->_placeholderNoValueFound == false && $r=='')
+                $r = ' '.$block.' ';
+        }
+        return $r;
     }
 
 
