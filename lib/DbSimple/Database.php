@@ -236,7 +236,7 @@ class DbSimple_Database extends DbSimple_LastError
     }
 
     /**
-     * string setIdentPrefix($prx)
+     * string setCachePrefix($prx)
      * Set cache prefix used in key caclulation.
      */
     function setCachePrefix($prx)
