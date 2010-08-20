@@ -645,6 +645,13 @@ class DbSimple_Database extends DbSimple_LastError
      */
     function _expandPlaceholdersFlow($query)
     {
+        //Инитим join - благотворительная помощь пользователям php4
+        $this->join = array(
+            '|' => array('inner' => ' AND ', 'outer' => ') OR (',),
+            '&' => array('inner' => ' OR ', 'outer' => ') AND (',),
+            'a' => array('inner' => ', ', 'outer' => '), (',),
+        );
+
         $re = '{
             (?>
                 # Ignored chunks.
@@ -669,7 +676,7 @@ class DbSimple_Database extends DbSimple_LastError
               |
             (?>
                 # Placeholder
-                (\?) ( [_dsafn\#]? )                           #2 #3
+                (\?) ( [_dsafn&|\#]? )                           #2 #3
             )
         }sx';
         $query = preg_replace_callback(
@@ -679,7 +686,8 @@ class DbSimple_Database extends DbSimple_LastError
         );
         return $query;
     }
-    
+
+    var $join;
 
     /**
      * string _expandPlaceholdersCallback(list $m)
@@ -708,20 +716,42 @@ class DbSimple_Database extends DbSimple_LastError
             
             // First process guaranteed non-native placeholders.
             switch ($type) {
+                case '|':
+                case '&':
                 case 'a':
                     if (!$value) $this->_placeholderNoValueFound = true;
                     if (!is_array($value)) return 'DBSIMPLE_ERROR_VALUE_NOT_ARRAY';
                     $parts = array();
-                    foreach ($value as $k=>$v) {
-                        $v = $v === null? 'NULL' : $this->escape($v);
-                        if (!is_int($k)) {
-                            $k = $this->escape($k, true);
-                            $parts[] = "$k=$v";
-                        } else {
-                            $parts[] = $v;
+                    $multi = array(); //массив для двойной вложенности
+                    $mult = $type!='a' || is_int(key($value)) && is_array(current($value));
+                    foreach ($value as $prefix => $field) {
+                        //превращаем $value в двумерный нуменованный массив
+                        if (!is_array($field)) {
+                            $field = array($prefix => $field);
+                            $prefix = 0;
+                        }
+                        $prefix = is_int($prefix) ? '' :
+                            $this->escape($this->_addPrefix2Table($prefix), true) . '.';
+                        //для мультиинсерта очищаем ключи - их быть не может по синтаксису
+                        if ($mult && $type=='a')
+                            $field = array_values($field);
+                        foreach ($field as $k => $v)
+                        {
+                            $v = $v === null? 'NULL' : $this->escape($v);
+                            if (!is_int($k)) {
+                                $k = $this->escape($k, true);
+                                $parts[] = "$prefix$k=$v";
+                            } else {
+                                $parts[] = $v;
+                            }
+                        }
+                        if ($mult)
+                        {
+                            $multi[] = join($this->join[$type]['inner'], $parts);
+                            $parts = array();
                         }
                     }
-                    return join(', ', $parts);
+                    return $mult ? join($this->join[$type]['outer'], $multi) : join(', ', $parts);
                 case '#':
                     // Identifier.
                     if (!is_array($value))
