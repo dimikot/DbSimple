@@ -116,7 +116,7 @@ class DbSimple_Connect
 		if (isset($parsed['prefix']))
 			$this->DbSimple->setIdentPrefix($parsed['prefix']);
 		$this->DbSimple->setCachePrefix('db_'.md5($parsed['dsn']).'_');
-		$this->DbSimple->setErrorHandler(array(&$this, 'errorHandler'), false);
+		$this->DbSimple->setErrorHandler($this->errorHandler!==null ? $this->errorHandler : array(&$this, 'errorHandler'));
 	}
 
 	/**
@@ -135,12 +135,14 @@ class DbSimple_Connect
 	}
 
 	/**
-	 * Set new error handler called on database errors.
-	 * Handler gets 2 arguments:
-	 * - error message
-	 * - full error context information (last query etc.)
+	 * Устанавливает новый обработчик ошибок
+	 * Обработчик получает 2 аргумента:
+	 * - сообщение об ошибке
+	 * - массив (код, сообщение, запрос, контекст)
 	 *
-	 * @param callback setErrorHandler(callback $handler)
+	 * @param callback|null|false $handler обработчик ошибок
+	 * <br>  null - по умолчанию
+	 * <br>  false - отключен
 	 */
 	public function setErrorHandler($handler)
 	{
