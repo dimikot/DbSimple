@@ -836,7 +836,7 @@ class DbSimple_Database extends DbSimple_LastError
      * @param string $table имя таблицы
      * @return string имя таблицы
      */
-    private function _addPrefix2Table($table)
+    function _addPrefix2Table($table)
     {
         if (substr($table, 0, 2) == '?_')
             $table = $this->_identPrefix . substr($table, 2);
@@ -850,7 +850,7 @@ class DbSimple_Database extends DbSimple_LastError
      * @param string $block блок, который нужно разобрать
      * @return string что получается в результате разбора блока
      */
-    private function _expandOptionalBlock($block)
+    function _expandOptionalBlock($block)
     {
         $alts = array();
         $alt = '';
