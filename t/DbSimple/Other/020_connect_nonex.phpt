@@ -1,20 +1,20 @@
 --TEST--
 Connect to non existed DB
 --FILE--
-<?php ## Подключение к БД.
+<?php ## РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”.
 require_once dirname(__FILE__)."/../../../lib/config.php";
 require_once "DbSimple/Generic.php";
 
-// Подключаемся к БД.
+// РџРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє Р‘Р”.
 $DATABASE = DbSimple_Generic::connect('mysql://test:test@localhost1/non-existed-db');
 
-// Устанавливаем обработчик ошибок.
+// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РѕР±СЂР°Р±РѕС‚С‡РёРє РѕС€РёР±РѕРє.
 $DATABASE->setErrorHandler('databaseErrorHandler');
 
-// Код обработчика ошибок SQL.
+// РљРѕРґ РѕР±СЂР°Р±РѕС‚С‡РёРєР° РѕС€РёР±РѕРє SQL.
 function databaseErrorHandler($message, $info)
 {
-	// Если использовалась @, ничего не делать.
+	// Р•СЃР»Рё РёСЃРїРѕР»СЊР·РѕРІР°Р»Р°СЃСЊ @, РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°С‚СЊ.
 	if (!error_reporting()) return;
 	$dir = dirname(__FILE__). '/';
 	$rpath = str_replace($dir, '', $info['context']);
