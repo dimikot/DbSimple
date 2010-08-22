@@ -1,5 +1,8 @@
+--TEST--
+Connect to non existed DB
+--FILE--
 <?php ## Подключение к БД.
-require_once "../../lib/config.php";
+require_once dirname(__FILE__)."/../../../lib/config.php";
 require_once "DbSimple/Generic.php";
 
 // Подключаемся к БД.
@@ -13,10 +16,13 @@ function databaseErrorHandler($message, $info)
 {
 	// Если использовалась @, ничего не делать.
 	if (!error_reporting()) return;
-	// Выводим подробную информацию об ошибке.
-	echo "SQL Error: $message<br><pre>"; 
-	print_r($info);
-	echo "</pre>";
+	$dir = dirname(__FILE__). '/';
+	$rpath = str_replace($dir, '', $info['context']);
+	echo "Error: ".$info['message']."\n";
+	echo "Context: ".$rpath."\n";
 	exit();
 }
 ?>
+--EXPECT--
+Error: not connect
+Context: 020_connect_nonex.php line 6

@@ -43,9 +43,9 @@ class DbSimple_Mysql extends DbSimple_Database
             true
         );
         $this->_resetLastError();
-        if (!$ok) return $this->_setDbError('mysql_connect()');
+        if (!$ok) return $this->_setLastError('-1', 'not connect', 'mysql_connect()');
         $ok = @mysql_select_db(preg_replace('{^/}s', '', $p['path']), $this->link);
-        if (!$ok) return $this->_setDbError('mysql_select_db()');
+        if (!$ok) return $this->_setLastError('-1', 'wrong database', 'mysql_select_db()');
         if (isset($p["charset"])) {
             $this->query('SET NAMES ?', $p["charset"]);
         }
