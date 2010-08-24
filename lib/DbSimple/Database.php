@@ -201,6 +201,20 @@ class DbSimple_Database extends DbSimple_LastError
     
 
     /**
+     * DbSimple_SubQuery subquery(string $query [, $arg1] [,$arg2] ...)
+     * Выполняет разворачивание плейсхолдеров без коннекта к базе
+     * Нужно для сложных запросов, состоящих из кусков, которые полезно сохранить
+     *
+     */
+    public function subquery()
+    {
+        $args = func_get_args();
+        $this->_expandPlaceholders($args,$this->_placeholderNativeArgs !== null);
+        return new DbSimple_SubQuery($args);
+    }
+
+
+    /**
      * callback setLogger(callback $logger)
      * Set query logger called before each query is executed.
      * Returns previous logger.
@@ -719,6 +733,10 @@ class DbSimple_Database extends DbSimple_LastError
             
             // First process guaranteed non-native placeholders.
             switch ($type) {
+                case 's':
+                    if (!($value instanceof DbSimple_SubQuery))
+                        return 'DBSIMPLE_ERROR_VALUE_NOT_SUBQUERY';
+                    return $value->get($this->_placeholderNativeArgs);
                 case '|':
                 case '&':
                 case 'a':
@@ -740,6 +758,9 @@ class DbSimple_Database extends DbSimple_LastError
                             $field = array_values($field);
                         foreach ($field as $k => $v)
                         {
+                            if ($v instanceof DbSimple_SubQuery)
+                                $v = $v->get($this->_placeholderNativeArgs);
+                            else
                             $v = $v === null? 'NULL' : $this->escape($v);
                             if (!is_int($k)) {
                                 $k = $this->escape($k, true);
@@ -758,7 +779,11 @@ class DbSimple_Database extends DbSimple_LastError
                 case '#':
                     // Identifier.
                     if (!is_array($value))
+                    {
+                        if ($value instanceof DbSimple_SubQuery)
+                            return $value->get($this->_placeholderNativeArgs);
                         return $this->escape($this->_addPrefix2Table($value), true);
+                    }
                     $parts = array();
                     foreach ($value as $table => $identifiers)
                     {
@@ -768,7 +793,9 @@ class DbSimple_Database extends DbSimple_LastError
                         if (!is_int($table))
                             $prefix = $this->escape($this->_addPrefix2Table($table), true) . '.';
                         foreach ($identifiers as $identifier)
-                            if (!is_string($identifier))
+                            if ($identifier instanceof DbSimple_SubQuery)
+                                $parts[] = $identifier->get($this->_placeholderNativeArgs);
+                            elseif (!is_string($identifier))
                                 return 'DBSIMPLE_ERROR_ARRAY_VALUE_NOT_STRING';
                             else
                                 $parts[] = $prefix . ($identifier=='*' ? '*' :
@@ -1206,6 +1233,35 @@ class DbSimple_Blob extends DbSimple_LastError
     function close()
     {
         die("Method must be defined in derived class. Abstract function called at ".__FILE__." line ".__LINE__);
+    }
+}
+
+
+/**
+ * Класс для хранения подзапроса - результата выполнения функции
+ * DbSimple_Generic_Database::subquery
+ *
+ */
+class DbSimple_SubQuery
+{
+    private $query=array();
+
+    public function __construct(array $q)
+    {
+        $this->query = $q;
+    }
+
+    /**
+     * Возвращает сам запрос и добавляет плейсхолдеры в массив переданный по ссылке
+     *
+     * @param &array|null - ссылка на массив плейсхолдеров
+     * @return string
+     */
+    public function get(&$ph)
+    {
+        if ($ph !== null)
+            $ph = array_merge($ph, array_slice($this->query,1,null,true));
+        return $this->query[0];
     }
 }
 
