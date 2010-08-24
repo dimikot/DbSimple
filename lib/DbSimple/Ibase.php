@@ -199,7 +199,6 @@ class DbSimple_Ibase extends DbSimple_Database
 
         $row = @ibase_fetch_assoc($result, $flags);
         if (ibase_errmsg()) return $this->_setDbError($this->_lastQuery);
-        if ($row === false) return null;        
         return $row;
     }
     

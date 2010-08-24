@@ -174,7 +174,6 @@ class DbSimple_Mysql extends DbSimple_Database
     {
         $row = @mysql_fetch_assoc($result);
         if (mysql_error()) return $this->_setDbError($this->_lastQuery);
-        if ($row === false) return null;        
         return $row;
     }
     

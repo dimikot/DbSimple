@@ -128,7 +128,7 @@ class DbSimple_Database extends DbSimple_LastError
     /**
      * hash selectRow(string $query [, $arg1] [,$arg2] ...)
      * Return the first row of query result.
-     * On errors return null and set last error.
+     * On errors return false and set last error.
      * If no one row found, return array()! It is useful while debugging,
      * because PHP DOES NOT generates notice on $row['abc'] if $row === null
      * or $row === false (but, if $row is empty array, notice is generated).
@@ -306,7 +306,7 @@ class DbSimple_Database extends DbSimple_LastError
      * Must return:
      * - For SELECT queries: ID of result-set (PHP resource).
      * - For other  queries: query status (scalar).
-     * - For error  queries: null (and call _setLastError()).
+     * - For error  queries: false (and call _setLastError()).
      */
     function _performQuery($arrayQuery)
     {
@@ -321,7 +321,7 @@ class DbSimple_Database extends DbSimple_LastError
      * - For INSERT queries: ID of inserted row.
      * - For UPDATE queries: number of updated rows.
      * - For other  queries: query status (scalar).
-     * - For error  queries: null (and call _setLastError()).
+     * - For error  queries: false (and call _setLastError()).
      */
     function _performFetch($result)
     {
@@ -428,7 +428,7 @@ class DbSimple_Database extends DbSimple_LastError
             $this->_transformQuery($query, 'CALC_TOTAL');
         }
         $is_cacher_callable = (is_callable($this->_cacher) || (method_exists($this->_cacher, 'get') && method_exists($this->_cacher, 'save')));
-        $rows = null;
+        $rows = false;
         $cache_it = false;
         if (!empty($this->attributes['CACHE']) && $is_cacher_callable) {
 
@@ -489,7 +489,7 @@ class DbSimple_Database extends DbSimple_LastError
             else $cache_it = true;
         } 
 
-        if (null === $rows || true === $cache_it) {
+        if (false === $rows || true === $cache_it) {
             $this->_logQuery($query);
 
             // Run the query (counting time).
@@ -503,7 +503,7 @@ class DbSimple_Database extends DbSimple_LastError
                 $fStart = $this->_microtime();
                 $row = $this->_performFetch($result);
                 $firstFetchTime = $this->_microtime() - $fStart;
-                if ($row !== null) {
+                if ($row !== false) {
                     $rows[] = $row;
                     while ($row=$this->_performFetch($result)) {
                         $rows[] = $row;
@@ -1278,7 +1278,7 @@ class DbSimple_LastError
             call_user_func($this->errorHandler, $this->errmsg, $this->error);
         }
 
-        return null;
+        return false;
     }
 
 

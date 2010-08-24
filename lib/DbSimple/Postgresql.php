@@ -211,7 +211,6 @@ class DbSimple_Postgresql extends DbSimple_Database
     {
         $row = @pg_fetch_assoc($result);
         if (pg_last_error($this->link)) return $this->_setDbError($this->_lastQuery);
-        if ($row === false) return null;        
         return $row;
     }
     
