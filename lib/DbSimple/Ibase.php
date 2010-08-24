@@ -79,8 +79,7 @@ class DbSimple_Ibase extends DbSimple_Database
 
     function& _performNewBlob($blobid=null)
     {
-        $obj =& new DbSimple_Ibase_Blob($this, $blobid);
-        return $obj;
+        return new DbSimple_Ibase_Blob($this, $blobid);
     }
 
     function _performGetBlobFieldNames($result)
