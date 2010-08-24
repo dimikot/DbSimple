@@ -481,7 +481,7 @@ class DbSimple_Database extends DbSimple_LastError
                 $dummy = null;
                 // There is no need in query, cos' needle in $this->attributes['CACHE']
                 $this->_transformQuery($dummy, 'UNIQ_KEY');
-                $uniq_key = call_user_func_array(array(&$this, 'select'), $dummy);
+                $uniq_key = call_user_func(array(&$this, 'select'), $dummy);
                 $uniq_key = md5(serialize($uniq_key));
             }
             // Check TTL?
@@ -589,14 +589,13 @@ class DbSimple_Database extends DbSimple_LastError
                 return $options;
             case 'UNIQ_KEY':
                 $q = $this->attributes['CACHE'];
-                $i = 0;
-                $query = "  -- UNIQ_KEY\n";
+                $query = array();
                 while(preg_match('/(\w+)\.\w+/sx', $q, $m)) {
-                    if($i > 0)$query .= "\nUNION\n";
-                    $query .= 'SELECT MAX('.$m[0].') AS M, COUNT(*) AS C FROM '.$m[1];
+                    $query[] = 'SELECT MAX('.$m[0].') AS M, COUNT(*) AS C FROM '.$m[1];
                     $q = substr($q, strlen($m[0]));
-                    $i++;
                 }
+                $query = "  -- UNIQ_KEY\n".
+                    join("\nUNION\n", $query);
                 return true;
         }
         // No such transform.
@@ -980,9 +979,8 @@ class DbSimple_Database extends DbSimple_LastError
      * @param array $ak     List of ARRAY_KEY* field names.
      * @return array        Transformed array.
      */
-    function _transformResultToHash($rows, $arrayKeys)
+    function _transformResultToHash(array $rows, array $arrayKeys)
     {
-        $arrayKeys = (array)$arrayKeys;
         $result = array();
         foreach ($rows as $row) {
             // Iterate over all of ARRAY_KEY* fields and build array dimensions.
@@ -1014,7 +1012,7 @@ class DbSimple_Database extends DbSimple_LastError
      * @param string $pidName   Name of PARENT_ID field.
      * @return array            Transformed array (tree).
      */
-    function _transformResultToForest($rows, $idName, $pidName)
+    function _transformResultToForest(array $rows, $idName, $pidName)
     {
         $children = array(); // children of each ID
         $ids = array();
