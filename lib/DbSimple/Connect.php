@@ -148,7 +148,9 @@ class DbSimple_Connect
 	{
 		$prev = $this->errorHandler;
 		$this->errorHandler = $handler;
-		return $this->DbSimple->setErrorHandler($handler);
+		if ($this->DbSimple)
+			$this->DbSimple->setErrorHandler($handler);
+		return $prev;
 	}
 
 	/** @var callback обработчик ошибок */
