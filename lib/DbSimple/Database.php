@@ -217,7 +217,7 @@ class DbSimple_Database extends DbSimple_LastError
      * Set cache mechanism called during each query if specified.
      * Returns previous handler.
      */
-    function setCacher($cacher)
+    function setCacher(Zend_Cache_Backend_Interface $cacher=null)
     {
         $prev = $this->_cacher;
         $this->_cacher = $cacher;
@@ -427,19 +427,20 @@ class DbSimple_Database extends DbSimple_LastError
         if ($total) {
             $this->_transformQuery($query, 'CALC_TOTAL');
         }
-        $is_cacher_callable = (is_callable($this->_cacher) || (method_exists($this->_cacher, 'get') && method_exists($this->_cacher, 'save')));
+
         $rows = false;
         $cache_it = false;
-        if (!empty($this->attributes['CACHE']) && $is_cacher_callable) {
+        // Кешер у нас либо null либо соответствует Zend интерфейсу
+        if (!empty($this->attributes['CACHE']) && $this->_cacher)
+        {
 
             $hash = $this->_cachePrefix . md5(serialize($query));
             // Getting data from cache if possible
             $fetchTime = $firstFetchTime = 0;
             $qStart    = $this->_microtime();
-            $cacheData = $this->_cache($hash);
+            $cacheData = unserialize($this->_cacher->load($hash));
             $queryTime = $this->_microtime() - $qStart;
 
-            $storeTime  = isset($cacheData['storeTime'])  ? $cacheData['storeTime']  : null;
             $invalCache = isset($cacheData['invalCache']) ? $cacheData['invalCache'] : null;
             $result     = isset($cacheData['result'])     ? $cacheData['result']     : null; 
             $rows       = isset($cacheData['rows'])       ? $cacheData['rows']       : null; 
@@ -478,10 +479,10 @@ class DbSimple_Database extends DbSimple_LastError
                 $uniq_key = md5(serialize($uniq_key));
             }
             // Check TTL?
-            $ttl = empty($ttl) ? true : (int)$storeTime > (time() - $ttl);
+            $ok = empty($ttl) || $cacheData;
 
             // Invalidate cache?
-            if ($ttl && $uniq_key == $invalCache) {
+            if ($ok && $uniq_key == $invalCache) {
                 $this->_logQuery($query);
                 $this->_logQueryStat($queryTime, $fetchTime, $firstFetchTime, $rows);
 
@@ -532,15 +533,17 @@ class DbSimple_Database extends DbSimple_LastError
             $result = $this->_transformResult($rows);
 
             // Storing data in cache
-            if ($cache_it && $is_cacher_callable) {
-                $this->_cache(
-                    $hash,
-                    array(
-                        'storeTime'  => time(),
+            if ($cache_it && $this->_cacher)
+            {
+                $this->_cacher->save(
+                    serialize(array(
                         'invalCache' => $uniq_key,
                         'result'     => $result,
                         'rows'       => $rows
-                    )
+                    )),
+                    $hash,
+                    array(),
+                    $ttl==0?false:$ttl
                 );
             }
 
@@ -1127,24 +1130,7 @@ class DbSimple_Database extends DbSimple_LastError
         
         $this->_logQuery($log, true);
     }
-    
-    /**
-     * mixed _cache($hash, $result=null)
-     * Calls cache mechanism if possible.
-     */
-    function _cache($hash, $result=null)
-    {
-        if (is_callable($this->_cacher)) {
-            return call_user_func($this->_cacher, $hash, $result);
-        } else if (is_object($this->_cacher) && method_exists($this->_cacher, 'get') && method_exists($this->_cacher, 'save')) {
-            if (null === $result)
-                return $this->_cacher->get($hash);
-            else
-                $this->_cacher->save($result, $hash);
-        }
-        else return false;
-    }
-    
+   
     
     /**
      * protected constructor(string $dsn)

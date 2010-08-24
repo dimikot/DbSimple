@@ -1,11 +1,13 @@
 --TEST--
-Generic: Cache_Lite usage
+Generic: Zend_Cache usage
 --FILE--
 <?php
 require_once dirname(__FILE__) . '/../init.php';
 
 function main(&$DB)
 {
+	require_once dirname(__FILE__) . '/../../Cache/TstCacher.php';
+	$DB->setCacher(new TstCacher());
 	$query = "
         -- CACHE: 10
         SELECT * FROM test
