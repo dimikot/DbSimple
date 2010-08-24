@@ -210,7 +210,7 @@ class DbSimple_Ibase extends DbSimple_Database
     
 }
 
-class DbSimple_Ibase_Blob extends DbSimple_Blob
+class DbSimple_Ibase_Blob implements DbSimple_Blob
 {
     var $blob; // resourse link
     var $id;

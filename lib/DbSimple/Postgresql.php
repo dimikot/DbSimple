@@ -226,7 +226,7 @@ class DbSimple_Postgresql extends DbSimple_Database
 }
 
 
-class DbSimple_Postgresql_Blob extends DbSimple_Blob
+class DbSimple_Postgresql_Blob implements DbSimple_Blob
 {
     var $blob; // resourse link
     var $id;
