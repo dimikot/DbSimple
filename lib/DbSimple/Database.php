@@ -16,13 +16,44 @@
  * Additional keys can be added by appending a URI query string to the
  * end of the DSN.
  *
+ * The format of the supplied DSN is in its fullest form:
+ *   phptype(dbsyntax)://username:password@protocol+hostspec/database?option=8&another=true
+ *
+ * Most variations are allowed:
+ *   phptype://username:password@protocol+hostspec:110//usr/db_file.db?mode=0644
+ *   phptype://username:password@hostspec/database_name
+ *   phptype://username:password@hostspec
+ *   phptype://username@hostspec
+ *   phptype://hostspec/database
+ *   phptype://hostspec
+ *   phptype(dbsyntax)
+ *   phptype
+ *
+ * Parsing code is partially grabbed from PEAR DB class,
+ * initial author: Tomas V.V.Cox <cox@idecnet.com>.
+ *
  * Contains 3 classes:
  * - DbSimple_Database: common database methods
  * - DbSimple_Blob: common BLOB support
  * - DbSimple_LastError: error reporting and tracking
  *
+ * Special result-set fields:
+ * - ARRAY_KEY* ("*" means "anything")
+ * - PARENT_KEY
+ *
+ * Transforms:
+ * - GET_ATTRIBUTES
+ * - CALC_TOTAL
+ * - GET_TOTAL
+ * - UNIQ_KEY
+ *
+ * Query attributes:
+ * - BLOB_OBJ
+ * - CACHE
+ *
  * @author Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
  * @author Konstantin Zhinko, http://forum.dklab.ru/users/KonstantinGinkoTit/
+ * @author Ivan Borzenkov, http://forum.dklab.ru/users/Ivan1986/
  * 
  * @version 2.x $Id$
  */
