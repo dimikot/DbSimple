@@ -343,14 +343,6 @@ class DbSimple_Database extends DbSimple_LastError
     }
 
     /**
-     * array _performTotal($arrayQuery)
-     */
-    function _performTotal($arrayQuery)
-    {
-        die("Method must be defined in derived class. Abstract function called at ".__FILE__." line ".__LINE__);
-    }
-
-    /**
      * mixed _performTransaction($mode)
      * Start new transaction.
      */
