@@ -118,28 +118,6 @@ class DbSimple_Generic
             $object->setIdentPrefix($parsed['ident_prefix']);
         }
         $object->setCachePrefix(md5(serialize($parsed['dsn'])));
-        if (@fopen('Cache/Lite.php', 'r', true)) {
-            $tmp_dirs = array(
-                ini_get('session.save_path'),
-                getenv("TEMP"),
-                getenv("TMP"),
-                getenv("TMPDIR"),
-                '/tmp'
-            );
-            foreach ($tmp_dirs as $dir) {
-                if (!$dir) continue;
-                $fp = @fopen($testFile = $dir . '/DbSimple_' . md5(getmypid() . microtime()), 'w');
-                if ($fp) {
-                    fclose($fp);
-                    unlink($testFile);                
-                    require_once 'Cache' . '/Lite.php'; // "." -> no phpEclipse notice
-                    $t =& new Cache_Lite(array('cacheDir' => $dir.'/', 'lifeTime' => null, 'automaticSerialization' => true));
-                    $object->_cacher =& $t;
-                    break;
-                }
-
-            }
-        }
         return $object;
     }
     
