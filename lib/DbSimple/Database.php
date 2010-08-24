@@ -653,13 +653,6 @@ class DbSimple_Database extends DbSimple_LastError
      */
     function _expandPlaceholdersFlow($query)
     {
-        //Инитим join - благотворительная помощь пользователям php4
-        $this->join = array(
-            '|' => array('inner' => ' AND ', 'outer' => ') OR (',),
-            '&' => array('inner' => ' OR ', 'outer' => ') AND (',),
-            'a' => array('inner' => ', ', 'outer' => '), (',),
-        );
-
         $re = '{
             (?>
                 # Ignored chunks.
@@ -695,7 +688,11 @@ class DbSimple_Database extends DbSimple_LastError
         return $query;
     }
 
-    var $join;
+    static $join = array(
+        '|' => array('inner' => ' AND ', 'outer' => ') OR (',),
+        '&' => array('inner' => ' OR ', 'outer' => ') AND (',),
+        'a' => array('inner' => ', ', 'outer' => '), (',),
+    );
 
     /**
      * string _expandPlaceholdersCallback(list $m)
@@ -762,11 +759,11 @@ class DbSimple_Database extends DbSimple_LastError
                         }
                         if ($mult)
                         {
-                            $multi[] = join($this->join[$type]['inner'], $parts);
+                            $multi[] = join(self::$join[$type]['inner'], $parts);
                             $parts = array();
                         }
                     }
-                    return $mult ? join($this->join[$type]['outer'], $multi) : join(', ', $parts);
+                    return $mult ? join(self::$join[$type]['outer'], $multi) : join(', ', $parts);
                 case '#':
                     // Identifier.
                     if (!is_array($value))
@@ -1358,10 +1355,10 @@ class DbSimple_LastError
      */
     function debug_backtrace_smart($ignoresRe=null, $returnCaller=false)
     {
-        if (!is_callable($tracer='debug_backtrace')) return array();
-        $trace = $tracer();
+        $trace = debug_backtrace();
         
-        if ($ignoresRe !== null) $ignoresRe = "/^(?>{$ignoresRe})$/six";
+        if ($ignoresRe !== null)
+            $ignoresRe = "/^(?>{$ignoresRe})$/six";
         $smart = array();
         $framesSeen = 0;
         for ($i=0, $n=count($trace); $i<$n; $i++) {
