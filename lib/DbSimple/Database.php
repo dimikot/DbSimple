@@ -259,7 +259,23 @@ class DbSimple_Database extends DbSimple_LastError
         if ($prx !== null) $this->_cachePrefix = $prx;
         return $old;
     }
-    
+
+    /**
+     * Задает имя класса строки
+     *
+     * <br>для следующего запроса каждая строка будет
+     * заменена классом, конструктору которого передается
+     * массив поле=>значение для этой строки
+     *
+     * @param string $name имя класса
+     * @return DbSimple_Generic_Database указатель на себя
+     */
+    public function setClassName($name)
+    {
+        $this->_className = $name;
+        return $this;
+    }
+
     /**
      * array getStatistics()
      * Returns various statistical information.
@@ -558,6 +574,13 @@ class DbSimple_Database extends DbSimple_LastError
         if (is_array($result) && $total) {
             $this->_transformQuery($query, 'GET_TOTAL');
             $total = call_user_func_array(array(&$this, 'selectCell'), $query);
+        }
+
+        if ($this->_className)
+        {
+            foreach($result as $k=>$v)
+                $result[$k] = new $this->_className($v);
+            $this->_className = '';
         }
 
         return $result;
@@ -1154,6 +1177,7 @@ class DbSimple_Database extends DbSimple_LastError
     );
     
     var $_cachePrefix = '';
+    private $_className = '';
 
     var $_logger = null;
     var $_cacher = null;
