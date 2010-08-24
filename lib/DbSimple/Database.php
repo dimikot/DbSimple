@@ -948,30 +948,28 @@ class DbSimple_Database extends DbSimple_LastError
      */
     function _transformResult($rows)
     {
-        // Process ARRAY_KEY feature.
-        if (is_array($rows) && $rows) {
-            // Find ARRAY_KEY* AND PARENT_KEY fields in field list.
-            $pk = null;
-            $ak = array();
-            foreach (current($rows) as $fieldName => $dummy) {
-                if (0 == strncasecmp($fieldName, DBSIMPLE_ARRAY_KEY, strlen(DBSIMPLE_ARRAY_KEY))) {
-                    $ak[] = $fieldName;
-                } else if (0 == strncasecmp($fieldName, DBSIMPLE_PARENT_KEY, strlen(DBSIMPLE_PARENT_KEY))) {
-                    $pk = $fieldName;
-                }
-            }
-            natsort($ak); // sort ARRAY_KEY* using natural comparision
-            
-            if ($ak) {
-                // Tree-based array? Fields: ARRAY_KEY, PARENT_KEY
-                if ($pk !== null) {
-                    return $this->_transformResultToForest($rows, $ak[0], $pk);
-                }
-                // Key-based array? Fields: ARRAY_KEY.
-                return $this->_transformResultToHash($rows, $ak);
-            }
-        }
-        return $rows;
+        // is not array
+        if (!is_array($rows) || !$rows)
+            return $rows;
+
+        // Find ARRAY_KEY* AND PARENT_KEY fields in field list.
+        $pk = null;
+        $ak = array();
+        foreach (array_keys(current($rows)) as $fieldName)
+            if (0 == strncasecmp($fieldName, DBSIMPLE_ARRAY_KEY, strlen(DBSIMPLE_ARRAY_KEY)))
+                $ak[] = $fieldName;
+            elseif (0 == strncasecmp($fieldName, DBSIMPLE_PARENT_KEY, strlen(DBSIMPLE_PARENT_KEY)))
+                $pk = $fieldName;
+
+        if (!$ak)
+            return $rows;
+
+        natsort($ak); // sort ARRAY_KEY* using natural comparision
+        // Tree-based array? Fields: ARRAY_KEY, PARENT_KEY
+        if ($pk !== null)
+            return $this->_transformResultToForest($rows, $ak[0], $pk);
+        // Key-based array? Fields: ARRAY_KEY.
+        return $this->_transformResultToHash($rows, $ak);
     }
 
 
