@@ -11,7 +11,7 @@
  *
  * Use static DbSimple_Generic::connect($dsn) call if you don't know
  * database type and parameters, but have its DSN.
- * 
+ *
  * Additional keys can be added by appending a URI query string to the
  * end of the DSN.
  *
@@ -30,13 +30,13 @@
  *
  * Parsing code is partially grabbed from PEAR DB class,
  * initial author: Tomas V.V.Cox <cox@idecnet.com>.
- * 
+ *
  * Contains 3 classes:
  * - DbSimple_Generic: database factory class
  * - DbSimple_Generic_Database: common database methods
  * - DbSimple_Generic_Blob: common BLOB support
  * - DbSimple_Generic_LastError: error reporting and tracking
- * 
+ *
  * Special result-set fields:
  * - ARRAY_KEY* ("*" means "anything")
  * - PARENT_KEY
@@ -46,14 +46,14 @@
  * - CALC_TOTAL
  * - GET_TOTAL
  * - UNIQ_KEY
- * 
+ *
  * Query attributes:
  * - BLOB_OBJ
  * - CACHE
  *
  * @author Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
  * @author Konstantin Zhinko, http://forum.dklab.ru/users/KonstantinGinkoTit/
- * 
+ *
  * @version 2.x $Id$
  */
 
@@ -65,7 +65,7 @@ if (!defined('DBSIMPLE_SKIP'))
 
 /**
  * Names of special columns in result-set which is used
- * as array key (or karent key in forest-based resultsets) in 
+ * as array key (or karent key in forest-based resultsets) in
  * resulting hash.
  */
 if (!defined('DBSIMPLE_ARRAY_KEY'))
@@ -81,7 +81,7 @@ class DbSimple_Generic
 {
     /**
      * DbSimple_Generic connect(mixed $dsn)
-     * 
+     *
      * Universal static function to connect ANY database using DSN syntax.
      * Choose database driver according to DSN. Return new instance
      * of this driver.
@@ -120,12 +120,12 @@ class DbSimple_Generic
         $object->setCachePrefix(md5(serialize($parsed['dsn'])));
         return $object;
     }
-    
+
 
     /**
      * array parseDSN(mixed $dsn)
      * Parse a data source name.
-     * See parse_url() for details. 
+     * See parse_url() for details.
      */
     function parseDSN($dsn)
     {
@@ -139,7 +139,7 @@ class DbSimple_Generic
         }
         $parsed['dsn'] = $dsn;
         return $parsed;
-    }    
+    }
 }
 
 ?>

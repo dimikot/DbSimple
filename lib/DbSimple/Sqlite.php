@@ -37,12 +37,12 @@ class DbSimple_Sqlite extends DbSimple_Database
 			$this->_setLastError($e->getCode() , $e->getMessage(), 'sqlite_factory');
 		}
 	}
-	
+
 	public function CreateFunction($function_name, $callback, $num_args)
 	{	return $this->link->createFunction($function_name, $callback, $num_args); }
 	public function CreateAggregate($function_name, $step_func, $finalize_func, $num_args)
 	{	return $this->link->createAggregate($function_name, $step_func, $finalize_func, $num_args); }
-	
+
 	protected function _performGetPlaceholderIgnoreRe()
 	{
 		return '
