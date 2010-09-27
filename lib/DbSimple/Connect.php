@@ -101,6 +101,7 @@ class DbSimple_Connect
 
 	/**
 	 * Подключение к базе данных
+	 * @param string $dsn DSN строка БД
 	 */
 	protected function connect($dsn)
 	{
@@ -122,6 +123,9 @@ class DbSimple_Connect
 	/**
 	 * Функция обработки ошибок - стандартный обработчик
 	 * Все вызовы без @ прекращают выполнение скрипта
+	 *
+	 * @param string $msg Сообщение об ошибке
+	 * @param array $info Подробная информация о контексте ошибки
 	 */
 	public function errorHandler($msg, $info)
 	{
@@ -143,6 +147,7 @@ class DbSimple_Connect
 	 * @param callback|null|false $handler обработчик ошибок
 	 * <br>  null - по умолчанию
 	 * <br>  false - отключен
+	 * @return callback|null|false предыдущий обработчик
 	 */
 	public function setErrorHandler($handler)
 	{
@@ -159,7 +164,8 @@ class DbSimple_Connect
 	/**
 	 * Разбирает строку DSN в массив параметров подключения к базе
 	 *
-	 * @param array parseDSN(string $dsn)
+	 * @param string $dsn строка DSN для разбора
+	 * @return array Параметры коннекта
 	 */
 	protected function parseDSN($dsn)
 	{
