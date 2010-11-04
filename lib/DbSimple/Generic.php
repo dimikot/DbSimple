@@ -86,7 +86,7 @@ class DbSimple_Generic
      * Choose database driver according to DSN. Return new instance
      * of this driver.
      */
-    function& connect($dsn)
+    function connect($dsn)
     {
         // Load database driver and create its instance.
         $parsed = DbSimple_Generic::parseDSN($dsn);
@@ -96,24 +96,15 @@ class DbSimple_Generic
         }
         $class = 'DbSimple_'.ucfirst($parsed['scheme']);
         if (!class_exists($class)) {
-            $file = str_replace('_', '/', $class) . ".php";
-            // Try to load library file from standard include_path.
-            if ($f = @fopen($file, "r", true)) {
-                fclose($f);
+            $file = dirname(__FILE__).'/'.ucfirst($parsed['scheme']). ".php";
+            if (is_file($file)) {
                 require_once($file);
             } else {
-                // Wrong include_path; try to load from current directory.
-                $base = basename($file);
-                $dir = dirname(__FILE__);
-                if (@is_file($path = "$dir/$base")) {
-                    require_once($path);
-                } else {
-                    trigger_error("Error loading database driver: no file $file in include_path; no file $base in $dir", E_USER_ERROR);
-                    return null;
-                }
+                trigger_error("Error loading database driver: no file $file", E_USER_ERROR);
+                return null;
             }
         }
-        $object =& new $class($parsed);
+        $object = new $class($parsed);
         if (isset($parsed['ident_prefix'])) {
             $object->setIdentPrefix($parsed['ident_prefix']);
         }
@@ -130,7 +121,7 @@ class DbSimple_Generic
     function parseDSN($dsn)
     {
         if (is_array($dsn)) return $dsn;
-        $parsed = @parse_url($dsn);
+        $parsed = parse_url($dsn);
         if (!$parsed) return null;
         $params = null;
         if (!empty($parsed['query'])) {

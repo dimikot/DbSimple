@@ -77,7 +77,7 @@ class DbSimple_Ibase extends DbSimple_Database
         $this->trans = @ibase_trans($parameters, $this->link);
     }
 
-    function& _performNewBlob($blobid=null)
+    function _performNewBlob($blobid=null)
     {
         return new DbSimple_Ibase_Blob($this, $blobid);
     }
