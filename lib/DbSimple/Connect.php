@@ -40,6 +40,8 @@ class DbSimple_Connect
 	protected $DSN;
 	/** @var string Тип базы данных */
 	protected $shema;
+	/** @var array Что выставить при коннекте */
+	protected $init;
 
 	/**
 	 * Конструктор только запоминает переданный DSN
@@ -51,6 +53,7 @@ class DbSimple_Connect
 	{
 		$this->DbSimple = null;
 		$this->DSN      = $dsn;
+		$this->init     = array();
 		$this->shema    = ucfirst(substr($dsn, 0, strpos($dsn, ':')));
 	}
 
@@ -116,8 +119,14 @@ class DbSimple_Connect
 		$this->DbSimple = new $class($parsed);
 		if (isset($parsed['prefix']))
 			$this->DbSimple->setIdentPrefix($parsed['prefix']);
-		$this->DbSimple->setCachePrefix('db_'.md5($parsed['dsn']).'_');
+		if ($this->_cachePrefix) $this->DbSimple->setCachePrefix($this->_cachePrefix);
+		if ($this->_cacher) $this->DbSimple->setCacher($this->_cacher);
+		if ($this->_logger) $this->DbSimple->setLogger($this->_logger);
 		$this->DbSimple->setErrorHandler($this->errorHandler!==null ? $this->errorHandler : array(&$this, 'errorHandler'));
+		//выставление переменных
+		foreach($this->init as $query)
+			call_user_func_array(array(&$this->DbSimple, 'query'), $query);
+		$this->init = array();
 	}
 
 	/**
@@ -136,6 +145,19 @@ class DbSimple_Connect
 		print_r($info);
 		echo "</pre>";
 		exit();
+	}
+
+	/**
+	 * Выставляет запрос для инициализации
+	 *
+	 * @param string $query запрос
+	 */
+	public function addInit($query)
+	{
+		$args = func_get_args();
+		if ($this->DbSimple !== null)
+			return call_user_func_array(array(&$this->DbSimple, 'query'), $args);
+		$this->init[] = $args;
 	}
 
 	/**
@@ -160,6 +182,63 @@ class DbSimple_Connect
 
 	/** @var callback обработчик ошибок */
 	private $errorHandler = null;
+	private $_cachePrefix = '';
+	private $_logger = null;
+	private $_cacher = null;
+
+	/**
+	 * callback setLogger(callback $logger)
+	 * Set query logger called before each query is executed.
+	 * Returns previous logger.
+	 */
+	public function setLogger($logger)
+	{
+		$prev = $this->_logger;
+		$this->_logger = $logger;
+		if ($this->DbSimple)
+			$this->DbSimple->setLogger($logger);
+		return $prev;
+	}
+
+	/**
+	 * callback setCacher(callback $cacher)
+	 * Set cache mechanism called during each query if specified.
+	 * Returns previous handler.
+	 */
+	public function setCacher(Zend_Cache_Backend_Interface $cacher=null)
+	{
+		$prev = $this->_cacher;
+		$this->_cacher = $cacher;
+		if ($this->DbSimple)
+			$this->DbSimple->setCacher($cacher);
+		return $prev;
+	}
+
+	/**
+	 * string setIdentPrefix($prx)
+	 * Set identifier prefix used for $_ placeholder.
+	 */
+	public function setIdentPrefix($prx)
+	{
+		$old = $this->_identPrefix;
+		if ($prx !== null) $this->_identPrefix = $prx;
+		if ($this->DbSimple)
+			$this->DbSimple->setIdentPrefix($prx);
+		return $old;
+	}
+
+	/**
+	 * string setCachePrefix($prx)
+	 * Set cache prefix used in key caclulation.
+	 */
+	public function setCachePrefix($prx)
+	{
+		$old = $this->_cachePrefix;
+		if ($prx !== null) $this->_cachePrefix = $prx;
+		if ($this->DbSimple)
+			$this->DbSimple->setCachePrefix($prx);
+		return $old;
+	}
 
 	/**
 	 * Разбирает строку DSN в массив параметров подключения к базе

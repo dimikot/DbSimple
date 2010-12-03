@@ -27,7 +27,7 @@ if ($dsnOwn == '*' || preg_match('/^\w+$/', $dsnOwn)) {
 }
 
 foreach ($DSN as $dsn) {
-    $DB =& new DbSimple_Connect($dsn);
+    $DB =new DbSimple_Connect($dsn);
     $DB->setLogger('queryLogger');
     $DB->setErrorHandler('errorHandler');
     main($DB);
