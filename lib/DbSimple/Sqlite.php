@@ -30,7 +30,7 @@ class DbSimple_Sqlite extends DbSimple_Database
 		$err = '';
 		try
 		{
-			$this->link = sqlite_factory($dsn['path'], 0666, &$err);
+			$this->link = sqlite_factory($dsn['path'], 0666, $err);
 		}
 		catch (Exception $e)
 		{
