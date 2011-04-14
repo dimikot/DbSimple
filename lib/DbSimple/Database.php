@@ -1302,7 +1302,7 @@ abstract class DbSimple_LastError
         $this->errorHandler = $handler;
         // In case of setting first error handler for already existed
         // error - call the handler now (usual after connect()).
-        if (!$prev && $this->error) {
+        if (!$prev && $this->error && $this->errorHandler) {
             call_user_func($this->errorHandler, $this->errmsg, $this->error);
         }
         return $prev;

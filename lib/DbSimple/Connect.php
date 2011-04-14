@@ -42,6 +42,10 @@ class DbSimple_Connect
 	protected $shema;
 	/** @var array Что выставить при коннекте */
 	protected $init;
+	/** @var integer код ошибки */
+	public $error = null;
+	/** @var string сообщение об ошибке */
+	public $errmsg = null;
 
 	/**
 	 * Конструктор только запоминает переданный DSN
@@ -117,6 +121,8 @@ class DbSimple_Connect
 		require_once dirname(__FILE__).'/'.$this->shema.'.php';
 		$class = 'DbSimple_'.$this->shema;
 		$this->DbSimple = new $class($parsed);
+		$this->errmsg = &$this->DbSimple->errmsg;
+		$this->error = &$this->DbSimple->error;
 		if (isset($parsed['prefix']))
 			$this->DbSimple->setIdentPrefix($parsed['prefix']);
 		if ($this->_cachePrefix) $this->DbSimple->setCachePrefix($this->_cachePrefix);
