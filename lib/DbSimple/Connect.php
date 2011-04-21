@@ -123,8 +123,9 @@ class DbSimple_Connect
 		$this->DbSimple = new $class($parsed);
 		$this->errmsg = &$this->DbSimple->errmsg;
 		$this->error = &$this->DbSimple->error;
-		if (isset($parsed['prefix']))
-			$this->DbSimple->setIdentPrefix($parsed['prefix']);
+		$prefix = isset($parsed['prefix']) ? $parsed['prefix'] : ($this->_identPrefix ? $this->_identPrefix : false);
+		if ($prefix)
+			$this->DbSimple->setIdentPrefix($prefix);
 		if ($this->_cachePrefix) $this->DbSimple->setCachePrefix($this->_cachePrefix);
 		if ($this->_cacher) $this->DbSimple->setCacher($this->_cacher);
 		if ($this->_logger) $this->DbSimple->setLogger($this->_logger);
@@ -189,6 +190,7 @@ class DbSimple_Connect
 	/** @var callback обработчик ошибок */
 	private $errorHandler = null;
 	private $_cachePrefix = '';
+	private $_identPrefix = null;
 	private $_logger = null;
 	private $_cacher = null;
 

@@ -125,6 +125,11 @@ class TstCacher implements Zend_Cache_Backend_Interface
 				}
 	}
 
+	public function getAll()
+	{
+		return $this->c;
+	}
+
 	protected $c=array();
 	protected $t=array();
 	const defTime=3600;

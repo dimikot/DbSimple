@@ -6,7 +6,7 @@ require_once dirname(__FILE__)."/../../../lib/config.php";
 require_once "DbSimple/Generic.php";
 
 // Подключаемся к БД.
-$DATABASE = DbSimple_Generic::connect('mysql://test:test@localhost1/non-existed-db');
+$DATABASE = DbSimple_Generic::connect('mysql://test:test@localhost/non-existed-db');
 
 // Устанавливаем обработчик ошибок.
 $DATABASE->setErrorHandler('databaseErrorHandler');
@@ -24,5 +24,5 @@ function databaseErrorHandler($message, $info)
 }
 ?>
 --EXPECT--
-Error: not connect
+Error: wrong database
 Context: 020_connect_nonex.php line 6
