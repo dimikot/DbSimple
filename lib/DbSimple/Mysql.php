@@ -14,7 +14,7 @@
  * @author Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
  * @author Konstantin Zhinko, http://forum.dklab.ru/users/KonstantinGinkoTit/
  * 
- * @version 2.x $Id$
+ * @version 2.x $Id: Mysql.php 247 2008-08-18 21:17:08Z dk $
  */
 require_once dirname(__FILE__) . '/Generic.php';
 
@@ -68,9 +68,9 @@ class DbSimple_Mysql extends DbSimple_Generic_Database
     }
 
 
-    function& _performNewBlob($blobid=null)
+    function _performNewBlob($blobid=null)
     {
-        $obj =& new DbSimple_Mysql_Blob($this, $blobid);
+        $obj = new DbSimple_Mysql_Blob($this, $blobid);
         return $obj;
     }
 

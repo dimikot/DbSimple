@@ -11,7 +11,7 @@
  *
  * Use static DbSimple_Generic::connect($dsn) call if you don't know
  * database type and parameters, but have its DSN.
- * 
+ *
  * Additional keys can be added by appending a URI query string to the
  * end of the DSN.
  *
@@ -30,13 +30,13 @@
  *
  * Parsing code is partially grabbed from PEAR DB class,
  * initial author: Tomas V.V.Cox <cox@idecnet.com>.
- * 
- * Contains 3 classes:
+ *
+ * Сontains 3 classes:
  * - DbSimple_Generic: database factory class
  * - DbSimple_Generic_Database: common database methods
  * - DbSimple_Generic_Blob: common BLOB support
  * - DbSimple_Generic_LastError: error reporting and tracking
- * 
+ *
  * Special result-set fields:
  * - ARRAY_KEY* ("*" means "anything")
  * - PARENT_KEY
@@ -46,15 +46,15 @@
  * - CALC_TOTAL
  * - GET_TOTAL
  * - UNIQ_KEY
- * 
+ *
  * Query attributes:
  * - BLOB_OBJ
  * - CACHE
  *
  * @author Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
  * @author Konstantin Zhinko, http://forum.dklab.ru/users/KonstantinGinkoTit/
- * 
- * @version 2.x $Id$
+ *
+ * @version 2.x $Id: Generic.php 226 2007-09-17 21:00:15Z dk $
  */
 
 /**
@@ -64,7 +64,7 @@ define('DBSIMPLE_SKIP', log(0));
 
 /**
  * Names of special columns in result-set which is used
- * as array key (or karent key in forest-based resultsets) in 
+ * as array key (or karent key in forest-based resultsets) in
  * resulting hash.
  */
 define('DBSIMPLE_ARRAY_KEY', 'ARRAY_KEY');   // hash-based resultset support
@@ -78,12 +78,12 @@ class DbSimple_Generic
 {
     /**
      * DbSimple_Generic connect(mixed $dsn)
-     * 
+     *
      * Universal static function to connect ANY database using DSN syntax.
      * Choose database driver according to DSN. Return new instance
      * of this driver.
      */
-    function& connect($dsn)
+    function connect($dsn)
     {
         // Load database driver and create its instance.
         $parsed = DbSimple_Generic::parseDSN($dsn);
@@ -110,11 +110,12 @@ class DbSimple_Generic
                 }
             }
         }
-        $object =& new $class($parsed);
+        $object = new $class($parsed);
         if (isset($parsed['ident_prefix'])) {
             $object->setIdentPrefix($parsed['ident_prefix']);
         }
         $object->setCachePrefix(md5(serialize($parsed['dsn'])));
+        /*
         if (@fopen('Cache/Lite.php', 'r', true)) {
             $tmp_dirs = array(
                 ini_get('session.save_path'),
@@ -128,23 +129,24 @@ class DbSimple_Generic
                 $fp = @fopen($testFile = $dir . '/DbSimple_' . md5(getmypid() . microtime()), 'w');
                 if ($fp) {
                     fclose($fp);
-                    unlink($testFile);                
+                    unlink($testFile);
                     require_once 'Cache' . '/Lite.php'; // "." -> no phpEclipse notice
-                    $t =& new Cache_Lite(array('cacheDir' => $dir.'/', 'lifeTime' => null, 'automaticSerialization' => true));
-                    $object->_cacher =& $t;
+                    $t = new Cache_Lite(array('cacheDir' => $dir.'/', 'lifeTime' => null, 'automaticSerialization' => true));
+                    $object->_cacher = $t;
                     break;
                 }
 
             }
         }
+        */
         return $object;
     }
-    
+
 
     /**
      * array parseDSN(mixed $dsn)
      * Parse a data source name.
-     * See parse_url() for details. 
+     * See parse_url() for details.
      */
     function parseDSN($dsn)
     {
@@ -158,14 +160,14 @@ class DbSimple_Generic
         }
         $parsed['dsn'] = $dsn;
         return $parsed;
-    }    
+    }
 }
 
 
 /**
  * Base class for all databases.
  * Can create transactions and new BLOBs, parse DSNs.
- * 
+ *
  * Logger is COMMON for multiple transactions.
  * Error handler is private for each transaction and database.
  */
@@ -184,7 +186,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $this->_resetLastError();
         return $this->_performNewBlob($blob_id);
     }
-    
+
     /**
      * void transaction($mode)
      * Create new transaction.
@@ -228,7 +230,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $total = false;
         return $this->_query($args, $total);
     }
-    
+
     /**
      * mixed selectPage(int &$total, string $query [, $arg1] [,$arg2] ...)
      * Execute query and return the result.
@@ -305,18 +307,18 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $total = false;
         return $this->_query($args, $total);
     }
-    
+
     /**
      * string escape(mixed $s, bool $isIdent=false)
      * Enclose the string into database quotes correctly escaping
-     * special characters. If $isIdent is true, value quoted as identifier 
+     * special characters. If $isIdent is true, value quoted as identifier
      * (e.g.: `value` in MySQL, "value" in Firebird, [value] in MSSQL).
      */
     function escape($s, $isIdent=false)
     {
         return $this->_performEscape($s, $isIdent);
     }
-    
+
 
     /**
      * callback setLogger(callback $logger)
@@ -329,7 +331,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $this->_logger = $logger;
         return $prev;
     }
-    
+
     /**
      * callback setCacher(callback $cacher)
      * Set cache mechanism called during each query if specified.
@@ -341,7 +343,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $this->_cacher = $cacher;
         return $prev;
     }
-    
+
     /**
      * string setIdentPrefix($prx)
      * Set identifier prefix used for $_ placeholder.
@@ -363,7 +365,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         if ($prx !== null) $this->_cachePrefix = $prx;
         return $old;
     }
-    
+
     /**
      * array getStatistics()
      * Returns various statistical information.
@@ -372,6 +374,50 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     {
         return $this->_statistics;
     }
+
+
+
+
+    /* @kulikov */
+
+    var $_preQueryHandlers = array();
+
+    /**
+     * Добавляет функцию, которая будет вызываться всякий раз перед выполнением запроса к базе
+     * В эту функцию будет передата полность сформированная SQL строка
+     *
+     * @param $handlerName - название обработчика, чтобы потом по этому названию его можно было удалить из стека
+     * @param $callback
+     * @return callback|null - возвращает предыдущий калбек, зарегистрированный на это же имя (если был)
+     */
+    function addPreQueryHandler($handlerName, $callback)
+    {
+        if (!is_callable($callback)) return false;
+
+        $prev = isset($this->_preQueryHandlers[$handlerName]) ? $this->_preQueryHandlers[$handlerName] : null;
+        $this->_preQueryHandlers[$handlerName] = $callback;
+        return $prev;
+    }
+
+    /**
+     * Удаляет зарегистрированный ранее калбек по его имени.
+     *
+     * @param string $handlerName — имя обработчика для удаления
+     * @return — после удаления возвращает его, вдруг он кому пригодится
+     */
+    function removePreQueryHandler($handlerName)
+    {
+        $prev = isset($this->_preQueryHandlers[$handlerName]) ? $this->_preQueryHandlers[$handlerName] : null;
+        unset($this->_preQueryHandlers[$handlerName]);
+        return $prev;
+    }
+
+    /* /@kulikov */
+
+
+
+
+
 
 
     /**
@@ -390,10 +436,10 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
 
     /**
      * object _performNewBlob($id)
-     * 
+     *
      * Returns new blob object.
      */
-    function& _performNewBlob($id)
+    function _performNewBlob($id)
     {
         die("Method must be defined in derived class. Abstract function called at ".__FILE__." line ".__LINE__);
     }
@@ -406,10 +452,10 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     {
         die("Method must be defined in derived class. Abstract function called at ".__FILE__." line ".__LINE__);
     }
-    
+
     /**
      * mixed _performTransformQuery(array &$query, string $how)
-     * 
+     *
      * Transform query different way specified by $how.
      * May return some information about performed transform.
      */
@@ -417,8 +463,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     {
         die("Method must be defined in derived class. Abstract function called at ".__FILE__." line ".__LINE__);
     }
-    
-    
+
+
     /**
      * resource _performQuery($arrayQuery)
      * Must return:
@@ -430,7 +476,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     {
         die("Method must be defined in derived class. Abstract function called at ".__FILE__." line ".__LINE__);
     }
-    
+
     /**
      * mixed _performFetch($resultResource)
      * Fetch ONE NEXT row from result-set.
@@ -462,7 +508,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     {
         die("Method must be defined in derived class. Abstract function called at ".__FILE__." line ".__LINE__);
     }
-    
+
     /**
      * mixed _performCommit()
      * Commit the transaction.
@@ -480,7 +526,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     {
         die("Method must be defined in derived class. Abstract function called at ".__FILE__." line ".__LINE__);
     }
-    
+
     /**
      * string _performGetPlaceholderIgnoreRe()
      * Return regular expression which matches ignored query parts.
@@ -489,25 +535,25 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     function _performGetPlaceholderIgnoreRe()
     {
         return '';
-    }    
-    
+    }
+
     /**
      * Returns marker for native database placeholder. E.g. in FireBird it is '?',
      * in PostgreSQL - '$1', '$2' etc.
-     * 
+     *
      * @param int $n Number of native placeholder from the beginning of the query (begins from 0!).
      * @return string String representation of native placeholder marker (by default - '?').
      */
     function _performGetNativePlaceholderMarker($n)
     {
         return '?';
-    }  
-      
-    
+    }
+
+
     /**
      * Private methods.
      */
-    function ____________PRIVATE() {} // for phpEclipse outline     
+    function ____________PRIVATE() {} // for phpEclipse outline
 
 
     /**
@@ -517,7 +563,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
     function _query($query, &$total)
     {
         $this->_resetLastError();
-        
+
         // Fetch query attributes.
         $this->attributes = $this->_transformQuery($query, 'GET_ATTRIBUTES');
 
@@ -539,8 +585,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
 
             $storeTime  = isset($cacheData['storeTime'])  ? $cacheData['storeTime']  : null;
             $invalCache = isset($cacheData['invalCache']) ? $cacheData['invalCache'] : null;
-            $result     = isset($cacheData['result'])     ? $cacheData['result']     : null; 
-            $rows       = isset($cacheData['rows'])       ? $cacheData['rows']       : null; 
+            $result     = isset($cacheData['result'])     ? $cacheData['result']     : null;
+            $rows       = isset($cacheData['rows'])       ? $cacheData['rows']       : null;
 
 
             $cache_params = $this->attributes['CACHE'];
@@ -549,10 +595,10 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             $re = '/
                 (
                     ([0-9]+)           #2 - hours
-                h)? [ \t]* 
+                h)? [ \t]*
                 (
                     ([0-9]+)           #4 - minutes
-                m)? [ \t]* 
+                m)? [ \t]*
                 (
                     ([0-9]+)           #6 - seconds
                 s?)? (,)?
@@ -560,7 +606,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             $m = null;
             preg_match($re, $cache_params, $m);
             $ttl = @$m[6] + @$m[4] * 60 + @$m[2] * 3600;
-            // Cutting out time param - now there are just fields for uniqKey or nothing 
+            // Cutting out time param - now there are just fields for uniqKey or nothing
             $cache_params = trim(preg_replace($re, '', $cache_params, 1));
 
             $uniq_key = null;
@@ -570,7 +616,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                 $dummy = null;
                 // There is no need in query, cos' needle in $this->attributes['CACHE']
                 $this->_transformQuery($dummy, 'UNIQ_KEY');
-                $uniq_key = call_user_func_array(array(&$this, 'select'), $dummy);
+                $uniq_key = call_user_func_array(array($this, 'select'), (array) $dummy);
                 $uniq_key = md5(serialize($uniq_key));
             }
             // Check TTL?
@@ -583,13 +629,13 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
 
             }
             else $cache_it = true;
-        } 
+        }
 
         if (null === $rows || true === $cache_it) {
             $this->_logQuery($query);
 
             // Run the query (counting time).
-            $qStart = $this->_microtime();        
+            $qStart = $this->_microtime();
             $result = $this->_performQuery($query);
             $fetchTime = $firstFetchTime = 0;
 
@@ -613,7 +659,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
 
             // Log query statistics.
             $this->_logQueryStat($queryTime, $fetchTime, $firstFetchTime, $rows);
-            
+
             // Prepare BLOB objects if needed.
             if (is_array($rows) && !empty($this->attributes['BLOB_OBJ'])) {
                 $blobFieldNames = $this->_performGetBlobFieldNames($result);
@@ -623,7 +669,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                     }
                 }
             }
-    
+
             // Transform resulting rows.
             $result = $this->_transformResult($rows);
 
@@ -644,16 +690,16 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         // Count total number of rows if needed.
         if (is_array($result) && $total) {
             $this->_transformQuery($query, 'GET_TOTAL');
-            $total = call_user_func_array(array(&$this, 'selectCell'), $query);
+            $total = call_user_func_array(array($this, 'selectCell'), $query);
         }
 
         return $result;
     }
-    
-    
+
+
     /**
      * mixed _transformQuery(array &$query, string $how)
-     * 
+     *
      * Transform query different way specified by $how.
      * May return some information about performed transform.
      */
@@ -678,10 +724,10 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                 $q = $this->attributes['CACHE'];
                 $i = 0;
                 $query = "  -- UNIQ_KEY\n";
-                while(preg_match('/(\w+)\.\w+/sx', $q, $m)) {
+                while(preg_match('/([\w\.]+)\.\w+/sx', $q, $m)) {
                     if($i > 0)$query .= "\nUNION\n";
                     $query .= 'SELECT MAX('.$m[0].') AS M, COUNT(*) AS C FROM '.$m[1];
-                    $q = substr($q, strlen($m[0]));
+                    $q = substr($q, strpos($q, $m[0]) + strlen($m[0]));
                     $i++;
                 }
                 return true;
@@ -689,8 +735,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         // No such transform.
         $this->_setLastError(-1, "No such transform type: $how", $query);
     }
-        
-        
+
+
     /**
      * void _expandPlaceholders(array &$queryAndArgs, bool $useNative=false)
      * Replace placeholders by quoted values.
@@ -707,7 +753,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                 return;
             }
         }
-        
+
         if (!is_array($queryAndArgs)) {
             $queryAndArgs = array($queryAndArgs);
         }
@@ -727,13 +773,13 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         } else {
             $queryAndArgs = array($query);
         }
-        
+
         if ($cacheCode) {
             $this->_placeholderCache[$cacheCode] = $queryAndArgs;
         }
     }
 
-        
+
     /**
      * Do real placeholder processing.
      * Imply that all interval variables (_placeholder_*) already prepared.
@@ -745,17 +791,17 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             (?>
                 # Ignored chunks.
                 (?>
-                    # Comment. 
-                    -- [^\r\n]* 
-                ) 
+                    # Comment.
+                    -- [^\r\n]*
+                )
                   |
-                (?> 
+                (?>
                     # DB-specifics.
                     ' . trim($this->_performGetPlaceholderIgnoreRe()) . '
                 )
-            ) 
+            )
               |
-            (?> 
+            (?>
                 # Optional blocks
                 \{
                     # Use "+" here, not "*"! Else nested blocks are not processed well.
@@ -770,12 +816,12 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         }sx';
         $query = preg_replace_callback(
             $re,
-            array(&$this, '_expandPlaceholdersCallback'), 
+            array($this, '_expandPlaceholdersCallback'),
             $query
         );
         return $query;
     }
-    
+
 
     /**
      * string _expandPlaceholdersCallback(list $m)
@@ -786,12 +832,12 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         // Placeholder.
         if (!empty($m[2])) {
             $type = $m[3];
-            
+
             // Idenifier prefix.
             if ($type == '_') {
                 return $this->_identPrefix;
             }
-            
+
             // Value-based placeholder.
             if (!$this->_placeholderArgs) return 'DBSIMPLE_ERROR_NO_VALUE';
             $value = array_pop($this->_placeholderArgs);
@@ -801,7 +847,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                 $this->_placeholderNoValueFound = true;
                 return '';
             }
-            
+
             // First process guaranteed non-native placeholders.
             switch ($type) {
                 case 'a':
@@ -820,7 +866,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                     return join(', ', $parts);
                 case "#":
                     // Identifier.
-                    if (!is_array($value)) return $this->escape($value, true);
+                    if (!is_array($value)) return (string) $value; // если не массив — возвращаем как есть
                     $parts = array();
                     foreach ($value as $table => $identifier) {
                         if (!is_string($identifier)) return 'DBSIMPLE_ERROR_ARRAY_VALUE_NOT_STRING';
@@ -836,15 +882,15 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             if ($this->_placeholderNativeArgs !== null) {
                 $this->_placeholderNativeArgs[] = $value;
                 return $this->_performGetNativePlaceholderMarker(count($this->_placeholderNativeArgs) - 1);
-            } 
-            
+            }
+
             // In non-native mode arguments are quoted.
             if ($value === null) return 'NULL';
             switch ($type) {
                 case '':
                     if (!is_scalar($value)) return 'DBSIMPLE_ERROR_VALUE_NOT_SCALAR';
                     return $this->escape($value);
-                case 'd': 
+                case 'd':
                     return intval($value);
                 case 'f':
                     return str_replace(',', '.', floatval($value));
@@ -852,21 +898,21 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             // By default - escape as string.
             return $this->escape($value);
         }
-        
+
         // Optional block.
         if (isset($m[1]) && strlen($block=$m[1])) {
             $prev = @$this->_placeholderNoValueFound;
             $block = $this->_expandPlaceholdersFlow($block);
             $block = $this->_placeholderNoValueFound? '' : ' ' . $block . ' ';
-            $this->_placeholderNoValueFound = $prev; // recurrent-safe            
+            $this->_placeholderNoValueFound = $prev; // recurrent-safe
             return $block;
         }
-        
+
         // Default: skipped part of the string.
         return $m[0];
     }
-    
-    
+
+
     /**
      * void _setLastError($code, $msg, $query)
      * Set last database error context.
@@ -880,8 +926,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         }
         return DbSimple_Generic_LastError::_setLastError($code, $msg, $query);
     }
-    
-    
+
+
     /**
      * Return microtime as float value.
      */
@@ -890,8 +936,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $t = explode(" ", microtime());
         return $t[0] + $t[1];
     }
-    
-    
+
+
     /**
      * Convert SQL field-list to COUNT(...) clause
      * (e.g. 'DISTINCT a AS aa, b AS bb' -> 'COUNT(DISTINCT a, b)').
@@ -928,7 +974,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                 }
             }
             natsort($ak); // sort ARRAY_KEY* using natural comparision
-            
+
             if ($ak) {
                 // Tree-based array? Fields: ARRAY_KEY, PARENT_KEY
                 if ($pk !== null) {
@@ -944,7 +990,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
 
     /**
      * Converts rowset to key-based array.
-     * 
+     *
      * @param array $rows   Two-dimensional array of resulting rows.
      * @param array $ak     List of ARRAY_KEY* field names.
      * @return array        Transformed array.
@@ -966,7 +1012,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                     $tmp = array();
                     $current[] =& $tmp;
                     $current =& $tmp;
-                    unset($tmp); // we use $tmp, because don't know the value of auto-index
+                    unset($tmp); // we use жtmp, because don't know the value of auto-index
                 }
             }
             $current = $row; // save the row in last dimension
@@ -977,7 +1023,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
 
     /**
      * Converts rowset to the forest.
-     * 
+     *
      * @param array $rows       Two-dimensional array of resulting rows.
      * @param string $idName    Name of ID field.
      * @param string $pidName   Name of PARENT_ID field.
@@ -992,8 +1038,8 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             $row =& $rows[$i];
             $id = $row[$idName];
             if ($id === null) {
-                // Rows without an ID are totally invalid and makes the result tree to 
-                // be empty (because PARENT_ID = null means "a root of the tree"). So 
+                // Rows without an ID are totally invalid and makes the result tree to
+                // be empty (because PARENT_ID = null means "a root of the tree"). So
                 // skip them totally.
                 continue;
             }
@@ -1014,7 +1060,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
             if (!isset($ids[$pid])) {
                 $forest[$row[$idName]] =& $row;
             }
-            unset($row[$idName]); 
+            unset($row[$idName]);
             unset($row[$pidName]);
         }
         return $forest;
@@ -1033,10 +1079,10 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         if (!is_array($firstCell = current($v))) {
             $v = $firstCell;
         } else {
-            array_walk($v, array(&$this, '_shrinkLastArrayDimensionCallback'));
+            array_walk($v, array($this, '_shrinkLastArrayDimensionCallback'));
         }
     }
-    
+
 
     /**
      * void _logQuery($query, $noTrace=false)
@@ -1048,13 +1094,13 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         if (!$this->_logger) return;
         $this->_expandPlaceholders($query, false);
         $args = array();
-        $args[] =& $this;
+        $args[] = $this;
         $args[] = $query[0];
         $args[] = $noTrace? null : $this->findLibraryCaller();
         return call_user_func_array($this->_logger, $args);
     }
-    
-    
+
+
     /**
      * void _logQueryStat($queryTime, $fetchTime, $firstFetchTime, $rows)
      * Log information about performed query statistics.
@@ -1064,10 +1110,10 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         // Always increment counters.
         $this->_statistics['time'] += $queryTime;
         $this->_statistics['count']++;
-        
+
         // If no logger, economize CPU resources and actually log nothing.
         if (!$this->_logger) return;
-        
+
         $dt = round($queryTime * 1000);
         $firstFetchTime = round($firstFetchTime*1000);
         $tailFetchTime = round($fetchTime * 1000) - $firstFetchTime;
@@ -1080,7 +1126,7 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         $log .= "; returned ";
 
         if (!is_array($rows)) {
-            $log .= $this->escape($rows); 
+            $log .= $this->escape($rows);
         } else {
             $detailed = null;
             if (count($rows) == 1) {
@@ -1103,10 +1149,10 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
                 $log .= count($rows). " row(s)";
             }
         }
-        
+
         $this->_logQuery($log, true);
     }
-    
+
     /**
      * mixed _cache($hash, $result=null)
      * Calls cache mechanism if possible.
@@ -1123,18 +1169,18 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         }
         else return false;
     }
-    
-    
+
+
     /**
      * protected constructor(string $dsn)
-     * 
+     *
      * Prevent from direct creation of this object.
      */
     function DbSimple_Generic_Database()
     {
         die("This is protected constructor! Do not instantiate directly at ".__FILE__." line ".__LINE__);
     }
-    
+
     // Identifiers prefix (used for ?_ placeholder).
     var $_identPrefix = '';
 
@@ -1143,14 +1189,14 @@ class DbSimple_Generic_Database extends DbSimple_Generic_LastError
         'time'  => 0,
         'count' => 0,
     );
-    
+
     var $_cachePrefix = '';
 
     var $_logger = null;
     var $_cacher = null;
     var $_placeholderArgs, $_placeholderNativeArgs, $_placeholderCache=array();
     var $_placeholderNoValueFound;
-    
+
     /**
      * When string representation of row (in characters) is greater than this,
      * row data will not be logged.
@@ -1283,13 +1329,13 @@ class DbSimple_Generic_LastError
     /**
      * void addIgnoreInTrace($reName)
      * Add regular expression matching ClassName::functionName or functionName.
-     * Matched stack frames will be ignored in stack traces passed to query logger. 
-     */    
+     * Matched stack frames will be ignored in stack traces passed to query logger.
+     */
     function addIgnoreInTrace($name)
     {
         $this->ignoresInTraceRe .= "|" . $name;
     }
-    
+
     /**
      * array of array findLibraryCaller()
      * Return part of stacktrace before calling first library method.
@@ -1298,45 +1344,45 @@ class DbSimple_Generic_LastError
     function findLibraryCaller()
     {
         $caller = call_user_func(
-            array(&$this, 'debug_backtrace_smart'),
+            array($this, 'debug_backtrace_smart'),
             $this->ignoresInTraceRe,
             true
         );
         return $caller;
     }
-    
+
     /**
      * array debug_backtrace_smart($ignoresRe=null, $returnCaller=false)
-     * 
+     *
      * Return stacktrace. Correctly work with call_user_func*
      * (totally skip them correcting caller references).
      * If $returnCaller is true, return only first matched caller,
      * not all stacktrace.
-     * 
+     *
      * @version 2.03
      */
     function debug_backtrace_smart($ignoresRe=null, $returnCaller=false)
     {
         if (!is_callable($tracer='debug_backtrace')) return array();
         $trace = $tracer();
-        
+
         if ($ignoresRe !== null) $ignoresRe = "/^(?>{$ignoresRe})$/six";
         $smart = array();
         $framesSeen = 0;
         for ($i=0, $n=count($trace); $i<$n; $i++) {
             $t = $trace[$i];
             if (!$t) continue;
-                
+
             // Next frame.
             $next = isset($trace[$i+1])? $trace[$i+1] : null;
-            
+
             // Dummy frame before call_user_func* frames.
             if (!isset($t['file'])) {
                 $t['over_function'] = $trace[$i+1]['function'];
                 $t = $t + $trace[$i+1];
                 $trace[$i+1] = null; // skip call_user_func on next iteration
             }
-            
+
             // Skip myself frame.
             if (++$framesSeen < 2) continue;
 
@@ -1348,7 +1394,7 @@ class DbSimple_Generic_LastError
                 $frameCaller = (isset($next['class'])? $next['class'].'::' : '') . (isset($next['function'])? $next['function'] : '');
                 if (preg_match($ignoresRe, $frameCaller)) continue;
             }
-            
+
             // On each iteration we consider ability to add PREVIOUS frame
             // to $smart stack.
             if ($returnCaller) return $t;
@@ -1356,6 +1402,6 @@ class DbSimple_Generic_LastError
         }
         return $smart;
     }
-    
+
 }
 ?>

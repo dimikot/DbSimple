@@ -14,7 +14,7 @@
  * @author Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
  * @author Konstantin Zhinko, http://forum.dklab.ru/users/KonstantinGinkoTit/
  * 
- * @version 2.x $Id$
+ * @version 2.x $Id: Ibase.php 221 2007-07-27 23:24:35Z dk $
  */
 require_once dirname(__FILE__) . '/Generic.php';
 
