@@ -154,16 +154,16 @@ class DbSimple_Mssql extends DbSimple_Generic_Database
         $this->_lastQuery = $queryMain;
         $this->_expandPlaceholders($queryMain, false);
 
-		// @nazarov: патч - на убунте и mac os падает при вставке chr(152). обратная конвертация лежит на клиентском коде.
-		$queryMain[0] = str_replace(chr(152), '&#152;', $queryMain[0]);
+        // @nazarov: патч - на убунте и mac os падает при вставке chr(152). обратная конвертация лежит на клиентском коде.
+        $queryMain[0] = str_replace(chr(152), '&#152;', $queryMain[0]);
 
 
-		// @kulikov: запускаем обработчики preQueryHandlers, если они были установлены
-		if (!empty($this->_preQueryHandlers)) {
-		    foreach ((array) $this->_preQueryHandlers as $handlerCallback) {
-		        call_user_func($handlerCallback, $queryMain[0]);
-		    }
-		}
+        // @kulikov: запускаем обработчики preQueryHandlers, если они были установлены
+        if (!empty($this->_preQueryHandlers)) {
+            foreach ((array) $this->_preQueryHandlers as $handlerCallback) {
+                call_user_func($handlerCallback, $queryMain[0]);
+            }
+        }
 
 
         $result = mssql_query($queryMain[0], $this->link);
@@ -174,17 +174,17 @@ class DbSimple_Mssql extends DbSimple_Generic_Database
 
         if (!is_resource($result)) {
 
-        	if (preg_match('/^\s* INSERT \s+/six', $queryMain[0])) {
-        	    // INSERT queries return generated ID.
-    			$result = mssql_fetch_assoc(mssql_query("SELECT SCOPE_IDENTITY() AS insert_id", $this->link));
+            if (preg_match('/^\s* INSERT \s+/six', $queryMain[0])) {
+                // INSERT queries return generated ID.
+                $result = mssql_fetch_assoc(mssql_query("SELECT SCOPE_IDENTITY() AS insert_id", $this->link));
                 return isset($result['insert_id']) ? $result['insert_id'] : true;
             }
 
             // Non-SELECT queries return number of affected rows, SELECT - resource.
             if (function_exists('mssql_affected_rows')) {
-            	return mssql_affected_rows($this->link);
+                return mssql_affected_rows($this->link);
             } elseif (function_exists('mssql_rows_affected')) {
-            	return mssql_rows_affected($this->link);
+                return mssql_rows_affected($this->link);
             }
         }
         return $result;
