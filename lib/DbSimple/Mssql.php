@@ -36,7 +36,7 @@ class DbSimple_Mssql extends DbSimple_Generic_Database
         if (!is_callable('mssql_connect')) {
             return $this->_setLastError("-1", "Mssql extension is not loaded", "mssql_connect");
         }
-        $ok = $this->link = @mssql_pconnect(
+        $ok = $this->link = @mssql_connect(
             $p['host'] . (empty($p['port'])? "" : ":".$p['port']),
             $p['user'],
             $p['pass'],
@@ -154,18 +154,6 @@ class DbSimple_Mssql extends DbSimple_Generic_Database
         $this->_lastQuery = $queryMain;
         $this->_expandPlaceholders($queryMain, false);
 
-        // @nazarov: патч - на убунте и mac os падает при вставке chr(152). обратная конвертация лежит на клиентском коде.
-        $queryMain[0] = str_replace(chr(152), '&#152;', $queryMain[0]);
-
-
-        // @kulikov: запускаем обработчики preQueryHandlers, если они были установлены
-        if (!empty($this->_preQueryHandlers)) {
-            foreach ((array) $this->_preQueryHandlers as $handlerCallback) {
-                call_user_func($handlerCallback, $queryMain[0]);
-            }
-        }
-
-
         $result = mssql_query($queryMain[0], $this->link);
 
         if ($result === false) {
@@ -215,8 +203,7 @@ class DbSimple_Mssql extends DbSimple_Generic_Database
 
     function _calcFoundRowsAvailable()
     {
-        $ok = version_compare(mssql_get_server_info($this->link), '4.0') >= 0;
-        return $ok;
+        return false;
     }
 }
 
