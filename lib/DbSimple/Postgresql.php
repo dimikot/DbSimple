@@ -43,15 +43,24 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
         // Prepare+execute works only in PHP 5.1+.
         $this->DbSimple_Postgresql_USE_NATIVE_PHOLDERS = function_exists('pg_prepare');
         
+        $dsnWithoutPass = 
+        	(!empty($p['host']) ? 'host='.$p['host'].' ' : '') .
+            (!empty($p['port']) ? 'port=' . $p['port'] . ' ' : '') .
+            'dbname=' . preg_replace('{^/}s', '', $p['path']) .' '.
+            (!empty($p['user']) ? 'user='. $p['user'] : '');
         $ok = $this->link = @pg_connect(
-            $t = (!empty($p['host']) ? 'host='.$p['host'].' ' : '').
-            (!empty($p['port']) ? 'port='.$p['port'].' ' : '').
-            'dbname='.preg_replace('{^/}s', '', $p['path']).' '.
-            (!empty($p['user']) ? 'user='.$p['user'].' ' : '').
-            (!empty($p['pass']) ? 'password='.$p['pass'].' ' : '')
+            $dsnWithoutPass . " " . (!empty($p['pass']) ? 'password=' . $p['pass'] . ' ' : ''),
+			PGSQL_CONNECT_FORCE_NEW
         );
+        // We use PGSQL_CONNECT_FORCE_NEW, because in PHP 5.3 & PHPUnit
+        // $this->prepareCache may be cleaned, but $this->link is still
+        // not closed. So the next creation of DbSimple_Postgresql()
+        // would use exactly the same connection as the previous, but with
+        // empty $this->prepareCache, and it will generate "prepared statement 
+        // xxx already exists" error each time we execute the same statement
+        // as in the previous calls.
         $this->_resetLastError();
-        if (!$ok) return $this->_setDbError('pg_connect()');
+        if (!$ok) return $this->_setDbError('pg_connect("' . $dsnWithoutPass . '") error');
     }
 
 
@@ -170,15 +179,15 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
             $this->_expandPlaceholders($queryMain, true);
             $hash = md5($queryMain[0]);
             if (!isset($this->prepareCache[$hash])) {
-                $this->prepareCache[$hash] = true;
                 $prepared = @pg_prepare($this->link, $hash, $queryMain[0]);
                 if ($prepared === false) return $this->_setDbError($queryMain[0]);
+                else $this->prepareCache[$hash] = true;
             } else {
                 // Prepare cache hit!
             }
             $result = pg_execute($this->link, $hash, array_slice($queryMain, 1));
         } else {
-            // No support for native placeholders or INSERT query.
+            // No support for native placeholders on INSERT query.
             $this->_expandPlaceholders($queryMain, false);
             $result = @pg_query($this->link, $queryMain[0]);
         }
