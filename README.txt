@@ -1,4 +1,4 @@
-DbSimple: Simplest but poverful interface to work with various relational databases.
+DbSimple: Simplest but powerful interface to work with various relational databases.
 (C) Dmitry Koterov, http://en.dklab.ru/lib/DbSimple/
 
 
@@ -13,7 +13,7 @@ DbSimple introduces the interface much more simple and handy than above
 
 MAIN FEATURES
 
-* Supports PHP 4 and 5, DBMS: MySQL, PostgreSQL è InterBase/FireBird.
+* Supports PHP 4 and 5, DBMS: MySQL, PostgreSQL ï¿½ InterBase/FireBird.
 * Simple and laconic interface (see samples below).
 * Conditional macro-blocks in SQL body ({}-blocks), which allow to 
   dynamically generate even very complex queries without detriment to 
