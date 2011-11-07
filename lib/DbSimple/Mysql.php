@@ -43,10 +43,10 @@ class DbSimple_Mysql extends DbSimple_Database
         );
         $this->_resetLastError();
         if (!$ok)
-            return $this->_setLastError('-1', 'not connect', $connect.'()');
+            if (!$ok) return $this->_setDbError('mysql_connect("' . $str . '", "' . $p['user'] . '")');
         $ok = @mysql_select_db(preg_replace('{^/}s', '', $dsn['path']), $this->link);
         if (!$ok)
-            return $this->_setLastError('-1', 'wrong database', 'mysql_select_db()');
+            return $this->_setDbError('mysql_select_db()');
         mysql_query('SET NAMES '.(isset($dsn['enc'])?$dsn['enc']:'UTF8'));
     }
 
@@ -154,15 +154,19 @@ class DbSimple_Mysql extends DbSimple_Database
     protected function _performFetch($result)
     {
         $row = mysql_fetch_assoc($result);
-        if (mysql_error())
-            return $this->_setDbError($this->_lastQuery);
+        if (mysql_error()) return $this->_setDbError($this->_lastQuery);
+        if ($row === false) return null;
         return $row;
     }
 
 
     protected function _setDbError($query)
     {
-        return $this->_setLastError(mysql_errno($this->link), mysql_error($this->link), $query);
+    	if ($this->link) {
+	        return $this->_setLastError(mysql_errno($this->link), mysql_error($this->link), $query);
+	    } else {
+	        return $this->_setLastError(mysql_errno(), mysql_error(), $query);
+	    }
     }
 }
 

@@ -7,23 +7,24 @@ include_once dirname(__FILE__) . "/../../lib/config.php";
 ini_set("include_path", ini_get("include_path").PATH_SEPARATOR.dirname(__FILE__).'/..'); // for Cache_Lite
 include_once "DbSimple/Generic.php"; 
 
-$DSN = array();
-
-$dsnFile = "dsn.txt";
-$dsnOwn = trim(@join("", file($dsnFile)));
-if (!$dsnOwn) die("Current directory must contain $dsnFile file!");
-if ($dsnOwn == '*' || preg_match('/^\w+$/', $dsnOwn)) {
-	$dir = dirname(__FILE__);
-	$d = opendir($dir);
-	while (false !== ($e = readdir($d))) {
-		$full = realpath("$dir/$e");
-		if ($e == "." || $e == ".." || !is_dir($full) || $full == realpath(getcwd())) continue;
-		if ($dsnOwn != '*' && strtolower($e) != strtolower($dsnOwn)) continue;
-		$dsn = trim(@join("", file("$full/$dsnFile")));
-		if ($dsn) $DSN = array_merge($DSN, preg_split('/\s+/s', $dsn));
+if (!is_array(@$DSN)) {
+	$DSN = array();
+	$dsnFile = "dsn.txt";
+	$dsnOwn = trim(@join("", file($dsnFile)));
+	if (!$dsnOwn) die("Current directory must contain $dsnFile file!");
+	if ($dsnOwn == '*' || preg_match('/^\w+$/', $dsnOwn)) {
+		$dir = dirname(__FILE__);
+		$d = opendir($dir);
+		while (false !== ($e = readdir($d))) {
+			$full = realpath("$dir/$e");
+			if ($e == "." || $e == ".." || !is_dir($full) || $full == realpath(getcwd())) continue;
+			if ($dsnOwn != '*' && strtolower($e) != strtolower($dsnOwn)) continue;
+			$dsn = trim(@join("", file("$full/$dsnFile")));
+			if ($dsn) $DSN = array_merge($DSN, preg_split('/\s+/s', $dsn));
+		}
+	} else {
+		$DSN[] = $dsnOwn;
 	}
-} else {
-	$DSN[] = $dsnOwn;
 }
 
 foreach ($DSN as $dsn) {
