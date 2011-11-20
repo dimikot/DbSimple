@@ -517,7 +517,7 @@ abstract class DbSimple_Database extends DbSimple_LastError
                 $fStart = microtime(true);
                 $row = $this->_performFetch($result);
                 $firstFetchTime = microtime(true) - $fStart;
-                if ($row !== false) {
+                if (!empty($row)) {
                     $rows[] = $row;
                     while ($row=$this->_performFetch($result)) {
                         $rows[] = $row;
