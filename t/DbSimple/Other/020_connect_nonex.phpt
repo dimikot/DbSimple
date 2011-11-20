@@ -24,5 +24,5 @@ function databaseErrorHandler($message, $info)
 }
 ?>
 --EXPECT--
-Error: wrong database
+Error: Access denied for user 'test'@'%' to database 'non-existed-db'
 Context: 020_connect_nonex.php line 6

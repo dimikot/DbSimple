@@ -44,6 +44,6 @@ array (
   'str' => 'a',
 )
 array(1) {
-  ["79bf88e3f7d11a0a67cbad2ce8b36590278351e552185ed67702f0c1326535c0"]=>
+  ["e8c047124bb1326506f7144011c8ebaf278351e552185ed67702f0c1326535c0"]=>
   string(152) "a:3:{s:10:"invalCache";N;s:6:"result";a:1:{i:0;a:2:{s:2:"id";s:1:"1";s:3:"str";s:1:"a";}}s:4:"rows";a:1:{i:0;a:2:{s:2:"id";s:1:"1";s:3:"str";s:1:"a";}}}"
 }
