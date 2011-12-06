@@ -83,10 +83,8 @@ class DbSimple_Sqlite extends DbSimple_Database
 		$this->_expandPlaceholders($queryMain, false);
 		$error_msg = '';
 		$p = $this->link->query($queryMain[0], SQLITE_ASSOC, $error_msg);
-		if (!$p)
-			return $this->_setDbError($p->lastError(), $error_msg, $queryMain[0]);
-		if ($error_msg)
-			return $this->_setDbError($p->lastError(), $error_msg, $queryMain[0]);
+		if (!$p || $error_msg)
+			return $this->_setDbError($queryMain[0]);
 		if (preg_match('/^\s* INSERT \s+/six', $queryMain[0]))
 			return $this->link->lastInsertRowid();
 		if ($p->numFields()==0)
@@ -126,6 +124,11 @@ class DbSimple_Sqlite extends DbSimple_Database
 		}
 
 		return false;
+	}
+
+	protected function _setDbError($query)
+	{
+		return $this->_setLastError($this->link->lastError(), sqlite_error_string($this->link->lastError()), $query); 
 	}
 
 	protected function _performNewBlob($id=null)
