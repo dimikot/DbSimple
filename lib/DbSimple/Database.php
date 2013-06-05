@@ -511,7 +511,7 @@ abstract class DbSimple_Database extends DbSimple_LastError
             $result = $this->_performQuery($query);
             $fetchTime = $firstFetchTime = 0;
 
-            if (is_resource($result)) {
+            if (is_resource($result) || is_object($result)) {
                 $rows = array();
                 // Fetch result row by row.
                 $fStart = microtime(true);
