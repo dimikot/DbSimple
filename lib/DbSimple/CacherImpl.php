@@ -24,12 +24,12 @@ class CacherImpl implements Zend_Cache_Backend_Interface {
 
     public function save($data, $id, $tags = array(), $specificLifetime = false) {
 
-        return call_user_func(array($this, 'callback'), $id, $data);
+        return call_user_func($this->callback, $id, $data);
     }
 
     public function load($id, $doNotTestCacheValidity = false) {
 
-        return call_user_func(array($this, 'callback'), $id);
+        return call_user_func($this->callback, $id);
     }
 
     public function setDirectives($directives) {}
