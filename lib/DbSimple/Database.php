@@ -75,7 +75,7 @@ if (!defined('DBSIMPLE_PARENT_KEY'))
     define('DBSIMPLE_PARENT_KEY', 'PARENT_KEY'); // forrest-based resultset support
 
 
-if ( !interface_exists('Zend_Cache_Backend_Interface', false) ) {
+if ( !interface_exists('Zend_Cache_Backend_Interface') ) {
     require_once dirname(__FILE__) . '/Zend/Cache.php';
     require_once dirname(__FILE__) . '/Zend/Cache/Backend/Interface.php';
 }
