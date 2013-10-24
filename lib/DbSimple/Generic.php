@@ -96,7 +96,7 @@ class DbSimple_Generic
         }
         $class = 'DbSimple_'.ucfirst($parsed['scheme']);
         if (!class_exists($class)) {
-            $file = dirname(__FILE__).'/'.ucfirst($parsed['scheme']). ".php";
+            $file = __DIR__.'/'.ucfirst($parsed['scheme']). ".php";
             if (is_file($file)) {
                 require_once($file);
             } else {

@@ -2,7 +2,7 @@
 Connect to non existed DB
 --FILE--
 <?php ## Подключение к БД.
-require_once dirname(__FILE__)."/../../../lib/config.php";
+require_once __DIR__."/../../../lib/config.php";
 require_once "DbSimple/Generic.php";
 
 // Подключаемся к БД.
@@ -16,7 +16,7 @@ function databaseErrorHandler($message, $info)
 {
 	// Если использовалась @, ничего не делать.
 	if (!error_reporting()) return;
-	$dir = dirname(__FILE__). '/';
+	$dir = __DIR__. '/';
 	$rpath = str_replace($dir, '', $info['context']);
 	echo "Error: ".$info['message']."\n";
 	echo "Context: ".$rpath."\n";

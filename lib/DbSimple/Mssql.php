@@ -16,7 +16,7 @@
  *
  * @version 2.x $Id: Mssql.php 163 2007-01-10 09:47:49Z dk $
  */
-require_once dirname(__FILE__) . '/Generic.php';
+require_once __DIR__ . '/Generic.php';
 
 
 /**

@@ -76,11 +76,11 @@ if (!defined('DBSIMPLE_PARENT_KEY'))
 
 
 if ( !interface_exists('Zend_Cache_Backend_Interface', false) ) {
-    require_once dirname(__FILE__) . '/Zend/Cache.php';
-    require_once dirname(__FILE__) . '/Zend/Cache/Backend/Interface.php';
+    require_once __DIR__ . '/Zend/Cache.php';
+    require_once __DIR__ . '/Zend/Cache/Backend/Interface.php';
 }
 
-require_once dirname(__FILE__) . '/CacherImpl.php';
+require_once __DIR__ . '/CacherImpl.php';
 
 
 /**

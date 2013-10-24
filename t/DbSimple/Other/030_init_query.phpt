@@ -2,7 +2,7 @@
 Init query on connect
 --FILE--
 <?php
-require_once dirname(__FILE__) . '/../init_lasy.php';
+require_once __DIR__ . '/../init_lasy.php';
 
 function main(&$DB)
 {

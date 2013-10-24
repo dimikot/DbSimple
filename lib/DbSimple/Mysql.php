@@ -16,7 +16,7 @@
  *
  * @version 2.x $Id: Mysql.php 247 2008-08-18 21:17:08Z dk $
  */
-require_once dirname(__FILE__).'/Database.php';
+require_once __DIR__.'/Database.php';
 
 
 /**

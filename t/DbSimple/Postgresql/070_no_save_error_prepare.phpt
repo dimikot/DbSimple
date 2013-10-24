@@ -3,7 +3,7 @@ PostgreSQL: do not save errorous prepared statements
 
 --FILE--
 <?php
-require_once dirname(__FILE__) . '/../init.php';
+require_once __DIR__ . '/../init.php';
 
 $LAST_ERROR = null;
 function errorSaver($msg, $error)
