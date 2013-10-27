@@ -36,14 +36,14 @@ class DbSimple_Mysql extends DbSimple_Database
         if (!is_callable($connect))
             return $this->_setLastError("-1", "MySQL extension is not loaded", $connect);
         $ok = $this->link = @call_user_func($connect,
-            $dsn['host'] . (empty($dsn['port'])? "" : ":".$dsn['port']),
-            empty($dsn['user'])?'':$dsn['user'],
-            empty($dsn['pass'])?'':$dsn['pass'],
+            $str = $dsn['host'] . (empty($dsn['port'])? "" : ":".$dsn['port']),
+            $dsn['user'] = empty($dsn['user'])?'':$dsn['user'],
+            $dsn['pass'] = empty($dsn['pass'])?'':$dsn['pass'],
             true
         );
         $this->_resetLastError();
         if (!$ok)
-            if (!$ok) return $this->_setDbError('mysql_connect("' . $str . '", "' . $p['user'] . '")');
+            if (!$ok) return $this->_setDbError('mysql_connect("' . $str . '", "' . $dsn['user'] . '")');
         $ok = @mysql_select_db(preg_replace('{^/}s', '', $dsn['path']), $this->link);
         if (!$ok)
             return $this->_setDbError('mysql_select_db()');
