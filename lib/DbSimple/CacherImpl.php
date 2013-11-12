@@ -11,10 +11,13 @@ class CacherImpl implements Zend_Cache_Backend_Interface {
 
     protected $callback;
 
-    public function __construct(Callable $callback) {
-        $this->callback = $callback;
+    public function __construct($callback) {
+        if ( is_callable($callback) ) {
+            $this->callback = $callback;
+        } else {
+            $this->callback = $this->callbackDummy;
+        }
     }
-
 
     public function clean($mode = Zend_Cache::CLEANING_MODE_ALL, $tags = array()) {}
 
@@ -22,16 +25,21 @@ class CacherImpl implements Zend_Cache_Backend_Interface {
 
     public function test($id) {}
 
-    public function save($data, $id, $tags = array(), $specificLifetime = false) {
-
+    public function save($data, $id, $tags = array(), $specificLifetime = false)
+    {
         return call_user_func($this->callback, $id, $data);
     }
 
-    public function load($id, $doNotTestCacheValidity = false) {
-
+    public function load($id, $doNotTestCacheValidity = false)
+    {
         return call_user_func($this->callback, $id);
     }
 
     public function setDirectives($directives) {}
+
+    protected function callbackDummy($k, $v)
+    {
+        return null;
+    }
 
 } // CacherImpl class
