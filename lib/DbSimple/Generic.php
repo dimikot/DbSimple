@@ -85,6 +85,15 @@ class DbSimple_Generic
      * Universal static function to connect ANY database using DSN syntax.
      * Choose database driver according to DSN. Return new instance
      * of this driver.
+     *
+     * You can connect to MySQL by socket using this new syntax (like PDO DSN):
+     * $dsn = 'mysqli:unix_socket=/cloudsql/app:instance;user=root;pass=;dbname=testdb';
+     * $dsn = 'mypdo:unix_socket=/cloudsql/app:instance;charset=utf8;user=testuser;pass=mypassword;dbname=testdb';
+     *
+     * Connection by host also can be made with this syntax.
+     * Or you can use old syntax:
+     * $dsn = 'mysql://testuser:mypassword@127.0.0.1/testdb';
+     *
      */
     public static function connect($dsn)
     {
