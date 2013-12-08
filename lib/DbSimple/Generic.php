@@ -123,12 +123,62 @@ class DbSimple_Generic
         if (is_array($dsn)) return $dsn;
         $parsed = parse_url($dsn);
         if (!$parsed) return null;
+
         $params = null;
         if (!empty($parsed['query'])) {
             parse_str($parsed['query'], $params);
             $parsed += $params;
         }
+
+        if ( empty($parsed['host']) && empty($parsed['socket']) ) {
+            // Parse as DBO DSN string
+            $parsedPdo = self::parseDsnPdo($parsed['path']);
+            unset($parsed['path']);
+            $parsed = array_merge($parsed, $parsedPdo);
+        }
+
         $parsed['dsn'] = $dsn;
         return $parsed;
-    }
-}
+    } // parseDSN
+
+
+    /**
+     * Parse string as DBO DSN string.
+     *
+     * @param $str
+     * @return array
+     */
+    public static function parseDsnPdo($str) {
+
+        if (substr($str, 0, strlen('mysql:')) == 'mysql:') {
+            $str = substr($str, strlen('mysql:'));
+        }
+
+        $arr = explode(';', $str);
+
+        $result = array();
+        foreach ($arr as $k=>$v) {
+            $v = explode('=', $v);
+            if (count($v) == 2)
+                $result[ $v[0] ] = $v[1];
+        }
+
+        if ( isset($result['unix_socket']) ) {
+            $result['socket'] = $result['unix_socket'];
+            unset($result['unix_socket']);
+        }
+
+        if ( isset($result['dbname']) ) {
+            $result['path'] = $result['dbname'];
+            unset($result['dbname']);
+        }
+
+        if ( isset($result['charset']) ) {
+            $result['enc'] = $result['charset'];
+            unset($result['charset']);
+        }
+
+        return $result;
+    } // parseDsnPdo
+
+} // DbSimple_Generic class

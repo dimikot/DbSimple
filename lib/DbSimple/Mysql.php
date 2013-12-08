@@ -35,6 +35,15 @@ class DbSimple_Mysql extends DbSimple_Database
         $connect = 'mysql_'.((isset($dsn['persist']) && $dsn['persist'])?'p':'').'connect';
         if (!is_callable($connect))
             return $this->_setLastError("-1", "MySQL extension is not loaded", $connect);
+
+        //$mysql = mysql_connect(':/cloudsql/' . DB_HOST, DB_USER, DB_PASS);
+
+        if ( !empty($dsn['socket']) && empty($dsn['host']) ) {
+            // Socket connection
+            $dsn['host'] = ':' . $dsn['socket'];
+            unset($dsn['port']);
+        }
+
         $ok = $this->link = @call_user_func($connect,
             $str = $dsn['host'] . (empty($dsn['port'])? "" : ":".$dsn['port']),
             $dsn['user'] = empty($dsn['user'])?'':$dsn['user'],
