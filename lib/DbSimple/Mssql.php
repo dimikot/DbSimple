@@ -43,7 +43,7 @@ class DbSimple_Mssql extends DbSimple_Database
         );
         $this->_resetLastError();
         if (!$ok) return $this->_setDbError('mssql_connect()');
-        $ok = @mssql_select_db(preg_replace('{^/}s', '', $p['path']), $this->link);
+        $ok = @mssql_select_db(preg_replace('{^/}s', '', $dsn['path']), $this->link);
         if (!$ok) return $this->_setDbError('mssql_select_db()');
     }
 
@@ -241,4 +241,3 @@ class DbSimple_Mssql_Blob extends DbSimple_Generic_Blob
         return strlen($this->blobdata);
     }
 }
-?>

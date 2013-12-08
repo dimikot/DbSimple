@@ -1410,4 +1410,3 @@ abstract class DbSimple_LastError
     }
 
 }
-?>

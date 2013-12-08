@@ -317,4 +317,3 @@ class DbSimple_Postgresql_Blob implements DbSimple_Blob
         return true;
     }
 }
-?>

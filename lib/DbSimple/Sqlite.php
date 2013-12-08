@@ -147,4 +147,3 @@ class DbSimple_Sqlite extends DbSimple_Database
 
 }
 
-?>

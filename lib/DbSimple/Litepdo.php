@@ -150,5 +150,3 @@ class DbSimple_Litepdo extends DbSimple_Database
 	}
 
 }
-
-?>

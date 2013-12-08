@@ -284,5 +284,3 @@ class DbSimple_Ibase_Blob implements DbSimple_Blob
         return true;
     }
 }
-
-?>

@@ -256,18 +256,7 @@ class DbSimple_Connect
 	 */
 	protected function parseDSN($dsn)
 	{
-		$parsed = parse_url($dsn);
-		if (!$parsed)
-			return null;
-		$params = null;
-		if (!empty($parsed['query']))
-		{
-			parse_str($parsed['query'], $params);
-			$parsed += $params;
-		}
-		$parsed['dsn'] = $dsn;
-		return $parsed;
+        return DbSimple_Generic::parseDSN($dsn);
 	}
-}
 
-?>
+}
