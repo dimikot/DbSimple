@@ -189,7 +189,7 @@ class DbSimple_Mysqli extends DbSimple_Database
     	if ($this->link) {
 	        return $this->_setLastError(mysqli_errno($this->link), mysqli_error($this->link), $query);
 	    } else {
-	        return $this->_setLastError(mysqli_errno(), mysqli_error(), $query);
+	        return $this->_setLastError(mysqli_connect_errno(), mysqli_connect_error(), $query);
 	    }
     }
 }
