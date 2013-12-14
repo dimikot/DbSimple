@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__).'/Interface.php';
+require_once __DIR__.'/Interface.php';
 
 class TstCacher implements Zend_Cache_Backend_Interface
 {

@@ -16,7 +16,7 @@
  *
  * @version 2.x $Id: Mysql.php 247 2008-08-18 21:17:08Z dk $
  */
-require_once dirname(__FILE__).'/Database.php';
+require_once __DIR__.'/Database.php';
 
 
 /**
@@ -35,15 +35,24 @@ class DbSimple_Mysql extends DbSimple_Database
         $connect = 'mysql_'.((isset($dsn['persist']) && $dsn['persist'])?'p':'').'connect';
         if (!is_callable($connect))
             return $this->_setLastError("-1", "MySQL extension is not loaded", $connect);
+
+        //$mysql = mysql_connect(':/cloudsql/' . DB_HOST, DB_USER, DB_PASS);
+
+        if ( !empty($dsn['socket']) && empty($dsn['host']) ) {
+            // Socket connection
+            $dsn['host'] = ':' . $dsn['socket'];
+            unset($dsn['port']);
+        }
+
         $ok = $this->link = @call_user_func($connect,
-            $dsn['host'] . (empty($dsn['port'])? "" : ":".$dsn['port']),
-            empty($dsn['user'])?'':$dsn['user'],
-            empty($dsn['pass'])?'':$dsn['pass'],
+            $str = $dsn['host'] . (empty($dsn['port'])? "" : ":".$dsn['port']),
+            $dsn['user'] = empty($dsn['user'])?'':$dsn['user'],
+            $dsn['pass'] = empty($dsn['pass'])?'':$dsn['pass'],
             true
         );
         $this->_resetLastError();
         if (!$ok)
-            if (!$ok) return $this->_setDbError('mysql_connect("' . $str . '", "' . $p['user'] . '")');
+            if (!$ok) return $this->_setDbError('mysql_connect("' . $str . '", "' . $dsn['user'] . '")');
         $ok = @mysql_select_db(preg_replace('{^/}s', '', $dsn['path']), $this->link);
         if (!$ok)
             return $this->_setDbError('mysql_select_db()');

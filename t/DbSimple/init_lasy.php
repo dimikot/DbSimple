@@ -3,8 +3,8 @@ $stack = debug_backtrace();
 chdir(dirname(realpath($stack[0]['file'])));
 
 header("Content-type: text/plain");
-include_once dirname(__FILE__) . "/../../lib/config.php";
-ini_set("include_path", ini_get("include_path").PATH_SEPARATOR.dirname(__FILE__).'/..'); // for Cache_Lite
+include_once __DIR__ . "/../../lib/config.php";
+ini_set("include_path", ini_get("include_path").PATH_SEPARATOR.__DIR__.'/..'); // for Cache_Lite
 include_once "DbSimple/Connect.php"; 
 
 $DSN = array();
@@ -13,7 +13,7 @@ $dsnFile = "dsn.txt";
 $dsnOwn = trim(@join("", file($dsnFile)));
 if (!$dsnOwn) die("Current directory must contain $dsnFile file!");
 if ($dsnOwn == '*' || preg_match('/^\w+$/', $dsnOwn)) {
-	$dir = dirname(__FILE__);
+	$dir = __DIR__;
 	$d = opendir($dir);
 	while (false !== ($e = readdir($d))) {
 		$full = realpath("$dir/$e");
@@ -42,7 +42,7 @@ function queryLogger(&$DB, $query)
 function errorHandler($msg, $error)
 {
 	if (!error_reporting()) return;
-	$dir = dirname(__FILE__). '/';
+	$dir = __DIR__. '/';
 	$rpath = str_replace($dir, '', $error['context']);
 	printr($error['message'], "Error");
 	printr($rpath, "Context");

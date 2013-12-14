@@ -16,7 +16,7 @@
  *
  * @version 2.x $Id$
  */
-require_once dirname(__FILE__) . '/Database.php';
+require_once __DIR__ . '/Database.php';
 
 
 /**
@@ -317,4 +317,3 @@ class DbSimple_Postgresql_Blob implements DbSimple_Blob
         return true;
     }
 }
-?>

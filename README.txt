@@ -107,6 +107,14 @@ OR
 require_once "DbSimple/Connect.php";
 $DB = new DbSimple_Connect("pgsql://login:password@host/database");
 
+OR
+
+You can use PDO DSN syntax (socket connections currently supported only with MySQL providers):
+
+require_once "DbSimple/Connect.php";
+$DB = new DbSimple_Connect("mysqli:unix_socket=/cloudsql/app:instance;user=root;pass=;dbname=testdb");
+
+
 Listing 2: Fetch all resulting rows
 
 $rows = $DB->select('SELECT * FROM ?_user LIMIT 10');

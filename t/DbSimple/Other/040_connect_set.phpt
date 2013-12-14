@@ -2,13 +2,13 @@
 Set prefixes
 --FILE--
 <?php
-require_once dirname(__FILE__) . '/../init_lasy.php';
+require_once __DIR__ . '/../init_lasy.php';
 
 function main(&$DB)
 {
 	$DB->setIdentPrefix('as_');
 	$DB->setCachePrefix('db_');
-	require_once dirname(__FILE__) . '/../../Cache/TstCacher.php';
+	require_once __DIR__ . '/../../Cache/TstCacher.php';
 	$DB->setCacher($Cacher = new TstCacher());
 	$query = "
         -- CACHE: 10

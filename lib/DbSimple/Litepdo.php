@@ -15,7 +15,7 @@
  *
  * @version 2.x $Id$
  */
-require_once dirname(__FILE__).'/Database.php';
+require_once __DIR__.'/Database.php';
 
 /**
  * Database class for SQLite.
@@ -150,5 +150,3 @@ class DbSimple_Litepdo extends DbSimple_Database
 	}
 
 }
-
-?>

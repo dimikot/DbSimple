@@ -16,7 +16,7 @@
  *
  * @version 2.x $Id: Mysqli.php 247 2008-08-18 21:17:08Z dk $
  */
-require_once dirname(__FILE__).'/Database.php';
+require_once __DIR__.'/Database.php';
 
 
 /**
@@ -42,14 +42,30 @@ class DbSimple_Mysqli extends DbSimple_Database
             } else {
                 $dsn["host"] = "p:".$dsn["host"];
             }
-        } 
-        
-        $this->link = mysqli_connect(
-            $dsn['host'] . (empty($dsn['port'])? "" : ":".$dsn['port']),
-            empty($dsn['user'])?'':$dsn['user'],
-            empty($dsn['pass'])?'':$dsn['pass'],
-            preg_replace('{^/}s', '', $dsn['path'])
-        );
+        }
+
+        if ( isset($dsn['socket']) ) {
+            // Socket connection
+            $this->link = mysqli_connect(
+                null                                         // host
+                ,empty($dsn['user']) ? 'root' : $dsn['user'] // user
+                ,empty($dsn['pass']) ? '' : $dsn['pass']     // password
+                ,preg_replace('{^/}s', '', $dsn['path'])     // schema
+                ,null                                        // port
+                ,$dsn['socket']                              // socket
+            );
+        } else if (isset($dsn['host']) ) {
+            // Host connection
+            $this->link = mysqli_connect(
+                $dsn['host']
+                ,empty($dsn['user']) ? 'root' : $dsn['user']
+                ,empty($dsn['pass']) ? '' : $dsn['pass']
+                ,preg_replace('{^/}s', '', $dsn['path'])
+                ,empty($dsn['port']) ? null : $dsn['port']
+            );
+        } else {
+            return $this->_setDbError('mysqli_connect()');
+        }
         $this->_resetLastError();
         if (!$this->link) return $this->_setDbError('mysqli_connect()');
         
@@ -173,7 +189,7 @@ class DbSimple_Mysqli extends DbSimple_Database
     	if ($this->link) {
 	        return $this->_setLastError(mysqli_errno($this->link), mysqli_error($this->link), $query);
 	    } else {
-	        return $this->_setLastError(mysqli_errno(), mysqli_error(), $query);
+	        return $this->_setLastError(mysqli_connect_errno(), mysqli_connect_error(), $query);
 	    }
     }
 }
@@ -213,4 +229,3 @@ class DbSimple_Mysqli_Blob implements DbSimple_Blob
         return strlen($this->blobdata);
     }
 }
-?>
