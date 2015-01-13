@@ -13,33 +13,33 @@
  *
  * @author Dmitry Koterov, http://forum.dklab.ru/users/DmitryKoterov/
  * @author Konstantin Zhinko, http://forum.dklab.ru/users/KonstantinGinkoTit/
- * 
+ *
  * @version 2.x $Id$
  */
-require_once dirname(__FILE__) . '/Generic.php';
+require_once __DIR__ . '/Database.php';
 
 
 /**
  * Database class for PostgreSQL.
  */
-class DbSimple_Postgresql extends DbSimple_Generic_Database
+class DbSimple_Postgresql extends DbSimple_Database
 {
 
     var $DbSimple_Postgresql_USE_NATIVE_PHOLDERS = null;
     var $prepareCache = array();
     var $link;
-    
+
     /**
      * constructor(string $dsn)
      * Connect to PostgresSQL.
      */
     function DbSimple_Postgresql($dsn)
     {
-        $p = DbSimple_Generic::parseDSN($dsn);
+        $p = DbSimple_Database::parseDSN($dsn);
         if (!is_callable('pg_connect')) {
             return $this->_setLastError("-1", "PostgreSQL extension is not loaded", "pg_connect");
         }
-        
+
         // Prepare+execute works only in PHP 5.1+.
         $this->DbSimple_Postgresql_USE_NATIVE_PHOLDERS = function_exists('pg_prepare');
         
@@ -48,6 +48,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
             (!empty($p['port']) ? 'port=' . $p['port'] . ' ' : '') .
             'dbname=' . preg_replace('{^/}s', '', $p['path']) .' '.
             (!empty($p['user']) ? 'user='. $p['user'] : '');
+
         $ok = $this->link = @pg_connect(
             $dsnWithoutPass . " " . (!empty($p['pass']) ? 'password=' . $p['pass'] . ' ' : ''),
 			PGSQL_CONNECT_FORCE_NEW
@@ -81,8 +82,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
 
     function& _performNewBlob($blobid=null)
     {
-        $obj =& new DbSimple_Postgresql_Blob($this, $blobid);
-        return $obj;
+        return new DbSimple_Postgresql_Blob($this, $blobid);
     }
 
 
@@ -90,7 +90,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
     {
         $blobFields = array();
         for ($i=pg_num_fields($result)-1; $i>=0; $i--) {
-            $type = pg_field_type($result, $i); 
+            $type = pg_field_type($result, $i);
             if (strpos($type, "BLOB") !== false) $blobFields[] = pg_field_name($result, $i);
         }
         return $blobFields;
@@ -110,7 +110,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
     {
         // PostgreSQL uses specific placeholders such as $1, $2, etc.
         return '$' . ($n + 1);
-    }  
+    }
 
     function _performCommit()
     {
@@ -126,7 +126,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
 
     function _performTransformQuery(&$queryMain, $how)
     {
-        
+
         // If we also need to calculate total number of found rows...
         switch ($how) {
             // Prepare total calculation (if possible)
@@ -139,7 +139,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
                 // TODO: GROUP BY ... -> COUNT(DISTINCT ...)
                 $re = '/^
                     (?> -- [^\r\n]* | \s+)*
-                    (\s* SELECT \s+)                                             #1     
+                    (\s* SELECT \s+)                                             #1
                     (.*?)                                                        #2
                     (\s+ FROM \s+ .*?)                                           #3
                         ((?:\s+ ORDER \s+ BY \s+ .*?)?)                          #4
@@ -148,12 +148,12 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
                 $m = null;
                 if (preg_match($re, $queryMain[0], $m)) {
                     $queryMain[0] = $m[1] . $this->_fieldList2Count($m[2]) . " AS C" . $m[3];
-                    $skipTail = substr_count($m[4] . $m[5], '?'); 
+                    $skipTail = substr_count($m[4] . $m[5], '?');
                     if ($skipTail) array_splice($queryMain, -$skipTail);
                 }
                 return true;
         }
-        
+
         return false;
     }
 
@@ -162,18 +162,18 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
     {
         $this->_lastQuery = $queryMain;
         $isInsert = preg_match('/^\s* INSERT \s+/six', $queryMain[0]);
-    
-        //        
+
+        //
         // Note that in case of INSERT query we CANNOT work with prepare...execute
-        // cache, because RULEs do not work after pg_execute(). This is a very strange 
+        // cache, because RULEs do not work after pg_execute(). This is a very strange
         // bug... To reproduce:
         //   $DB->query("CREATE TABLE test(id SERIAL, str VARCHAR(10)) WITH OIDS");
         //   $DB->query("CREATE RULE test_r AS ON INSERT TO test DO (SELECT 111 AS id)");
         //   print_r($DB->query("INSERT INTO test(str) VALUES ('test')"));
-        // In case INSERT + pg_execute() it returns new row OID (numeric) instead 
+        // In case INSERT + pg_execute() it returns new row OID (numeric) instead
         // of result of RULE query. Strange, very strange...
         //
-        
+
         if ($this->DbSimple_Postgresql_USE_NATIVE_PHOLDERS && !$isInsert) {
             // Use native placeholders only if PG supports them.
             $this->_expandPlaceholders($queryMain, true);
@@ -215,16 +215,15 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
         return $result;
     }
 
-    
+
     function _performFetch($result)
     {
         $row = @pg_fetch_assoc($result);
         if (pg_last_error($this->link)) return $this->_setDbError($this->_lastQuery);
-        if ($row === false) return null;        
         return $row;
     }
-    
-    
+
+
     function _setDbError($query)
     {
         return $this->_setLastError(null, $this->link? pg_last_error($this->link) : (is_array($query)? "Connection is not established" : $query), $query);
@@ -236,7 +235,7 @@ class DbSimple_Postgresql extends DbSimple_Generic_Database
 }
 
 
-class DbSimple_Postgresql_Blob extends DbSimple_Generic_Blob
+class DbSimple_Postgresql_Blob implements DbSimple_Blob
 {
     var $blob; // resourse link
     var $id;
@@ -256,7 +255,7 @@ class DbSimple_Postgresql_Blob extends DbSimple_Generic_Blob
         if (!($e=$this->_firstUse())) return $e;
         $data = @pg_lo_read($this->blob, $len);
         if ($data === false) return $this->_setDbError('read');
-        return $data;        
+        return $data;
     }
 
     function write($data)
@@ -296,8 +295,8 @@ class DbSimple_Postgresql_Blob extends DbSimple_Generic_Blob
     function _setDbError($query)
     {
         $hId = $this->id === null? "null" : ($this->id === false? "false" : $this->id);
-        $query = "-- $query BLOB $hId"; 
-        $this->database->_setDbError($query);        
+        $query = "-- $query BLOB $hId";
+        $this->database->_setDbError($query);
     }
 
     // Called on each blob use (reading or writing).
@@ -309,7 +308,7 @@ class DbSimple_Postgresql_Blob extends DbSimple_Generic_Blob
         // Open or create blob.
         if ($this->id !== null) {
             $this->blob = @pg_lo_open($this->database->link, $this->id, 'rw');
-            if ($this->blob === false) return $this->_setDbError('open'); 
+            if ($this->blob === false) return $this->_setDbError('open');
         } else {
             $this->id = @pg_lo_create($this->database->link);
             $this->blob = @pg_lo_open($this->database->link, $this->id, 'w');
@@ -318,4 +317,3 @@ class DbSimple_Postgresql_Blob extends DbSimple_Generic_Blob
         return true;
     }
 }
-?>

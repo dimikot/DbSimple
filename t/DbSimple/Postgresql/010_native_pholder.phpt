@@ -3,7 +3,7 @@ Postgresql: native placeholders support
 
 --FILE--
 <?php
-require_once dirname(__FILE__) . '/../init.php';
+require_once __DIR__ . '/../init.php';
 
 function main(&$DB)
 {

@@ -1,6 +1,6 @@
-<?php ## Ãëàâíûé êîíôèãóðàöèîííûé ôàéë ñàéòà.
-// Ïîäêëþ÷àåòñÿ êî âñåì ñöåíàðèÿì (àâòîìàòè÷åñêè èëè âðó÷íóþ)
+<?php ## Ð“Ð»Ð°Ð²Ð½Ñ‹Ð¹ ÐºÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ð¹ Ñ„Ð°Ð¹Ð» ÑÐ°Ð¹Ñ‚Ð°.
+// ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡Ð°ÐµÑ‚ÑÑ ÐºÐ¾ Ð²ÑÐµÐ¼ ÑÑ†ÐµÐ½Ð°Ñ€Ð¸ÑÐ¼ (Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸ Ð¸Ð»Ð¸ Ð²Ñ€ÑƒÑ‡Ð½ÑƒÑŽ)
 if (!defined("PATH_SEPARATOR"))
   define("PATH_SEPARATOR", getenv("COMSPEC")? ";" : ":");
-ini_set("include_path", ini_get("include_path").PATH_SEPARATOR.dirname(__FILE__));
+ini_set("include_path", ini_get("include_path").PATH_SEPARATOR.__DIR__);
 ?>

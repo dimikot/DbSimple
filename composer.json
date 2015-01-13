@@ -1,0 +1,36 @@
+{
+    "name": "dklab/dbsimple",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitry Koterov",
+            "email": "dmitry.koterov@gmail.com"
+        },
+        {
+            "name": "Ivan Borzenkov",
+            "email": "ivan1986@list.ru"
+        },
+        {
+            "name": "Stepan Legachev",
+            "email": "me@sib.li"
+        }        
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ivan1986/DbSimple"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/siberex/DbSimple"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "DbSimple": "lib/"
+        }
+    },
+    "require": {
+
+    }
+}

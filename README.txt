@@ -13,7 +13,7 @@ DbSimple introduces the interface much more simple and handy than above
 
 MAIN FEATURES
 
-* Supports PHP 4 and 5, DBMS: MySQL, PostgreSQL � InterBase/FireBird.
+* Supports PHP 5, DBMS: MySQL, PostgreSQL, InterBase/FireBird.
 * Simple and laconic interface (see samples below).
 * Conditional macro-blocks in SQL body ({}-blocks), which allow to 
   dynamically generate even very complex queries without detriment to 
@@ -101,6 +101,18 @@ Listing 1: Connect to DBMS
 
 require_once "DbSimple/Generic.php";
 $DB = DbSimple_Generic::connect("pgsql://login:password@host/database");
+
+OR
+
+require_once "DbSimple/Connect.php";
+$DB = new DbSimple_Connect("pgsql://login:password@host/database");
+
+OR
+
+You can use PDO DSN syntax (socket connections currently supported only with MySQL providers):
+
+require_once "DbSimple/Connect.php";
+$DB = new DbSimple_Connect("mysqli:unix_socket=/cloudsql/app:instance;user=root;pass=;dbname=testdb");
 
 
 Listing 2: Fetch all resulting rows
