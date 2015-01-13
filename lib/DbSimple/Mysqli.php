@@ -116,7 +116,11 @@ class DbSimple_Mysqli extends DbSimple_Database
 
     protected function _performTransaction($parameters=null)
     {
-        return mysqli_begin_transaction($this->link);
+        if( function_exists('mysqli_begin_transaction') ) {
+            return mysqli_begin_transaction($this->link);
+        } else {
+            return mysqli_autocommit($this->link, false);
+        }
     }
 
 
